@@ -12,8 +12,9 @@ window.addEventListener("load", function () {
         display.render();
     };
     var render = function () {
-        display.fill(game.world.background_color);
-        display.drawRectangle(game.world.player.x, game.world.player.y, game.world.player.width, game.world.player.height, game.world.player.color);
+        display.drawMap(game.world.columns);
+        //display.fill(game.world.background_color);
+        display.drawPlayer(game.world.player, game.world.player.color1, game.world.player.color2);
         display.render();
     };
     var update = function () {
@@ -35,9 +36,12 @@ window.addEventListener("load", function () {
     var engine = new Engine(1000 / 30, render, update);
     display.buffer.canvas.height = game.world.height;
     display.buffer.canvas.width = game.world.width;
+    display.tile_sheet.image.addEventListener("load", function () {
+        resize();
+        engine.start();
+    }, { once: true });
+    display.tile_sheet.image.src = "images/mapa.png";
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);
     window.addEventListener("resize", resize);
-    resize();
-    engine.start();
 });
