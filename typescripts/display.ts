@@ -15,28 +15,45 @@ export class Display {
   drawPlayer(rectangle: Player, color1: string, color2: string) {
     this.buffer.fillStyle = color1;
     this.buffer.fillRect(
-      Math.floor(rectangle.x),
-      Math.floor(rectangle.y),
+      Math.round(rectangle.x),
+      Math.round(rectangle.y),
       rectangle.width,
       rectangle.height
     );
     this.buffer.fillStyle = color2;
     this.buffer.fillRect(
-      Math.floor(rectangle.x + 20),
-      Math.floor(rectangle.y + 20),
+      Math.round(rectangle.x + 20),
+      Math.round(rectangle.y + 20),
       rectangle.width - 40,
       rectangle.height - 40
     );
   }
 
-  drawMap(columns: number) {
-    for (let index = 60 - 1; index > -1; --index) {
-      //let value = map[index] - 1;
-      let source_x = (index % this.tile_sheet.columns) * this.tile_sheet.tile_width;
+  drawMap(map: number[], columns: number) {
+    //top
+    this.buffer.drawImage(
+      this.tile_sheet.image,
+      0,
+      475,
+      1640,
+      19,
+      0,
+      0,
+      1640,
+      19
+    );
+
+    //map
+    for (let index = 0; index <= map.length - 1; index++) {
+      let value = map[index];
+      let source_x =
+        (value % this.tile_sheet.columns) * this.tile_sheet.tile_width;
       let source_y =
-        Math.floor(index / this.tile_sheet.columns) * this.tile_sheet.tile_height;
+        Math.floor(value / this.tile_sheet.columns) *
+        this.tile_sheet.tile_height;
       let destination_x = (index % columns) * this.tile_sheet.tile_width;
-      let destination_y = Math.floor(index / columns) * this.tile_sheet.tile_height;
+      let destination_y =
+        Math.floor(index / columns) * this.tile_sheet.tile_height;
       this.buffer.drawImage(
         this.tile_sheet.image,
         source_x,
@@ -44,11 +61,50 @@ export class Display {
         this.tile_sheet.tile_width,
         this.tile_sheet.tile_height,
         destination_x,
-        destination_y,
+        destination_y + 19,
         this.tile_sheet.tile_width,
         this.tile_sheet.tile_height
       );
     }
+
+    //bottom
+    this.buffer.drawImage(
+      this.tile_sheet.image,
+      0,
+      494,
+      1640,
+      31,
+      0,
+      589,
+      1640,
+      31
+    );
+
+    //info_box
+    this.buffer.drawImage(
+      this.tile_sheet.image,
+      0,
+      525,
+      1640,
+      260,
+      0,
+      620,
+      1640,
+      260
+    );
+
+    //footer
+    this.buffer.drawImage(
+      this.tile_sheet.image,
+      0,
+      785,
+      1640,
+      59,
+      0,
+      880,
+      1640,
+      59
+    );
   }
 
   fill(color: string) {

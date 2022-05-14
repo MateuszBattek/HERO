@@ -14,16 +14,11 @@ window.addEventListener("load", function () {
       document.documentElement.clientHeight - 32,
       game.world.height / game.world.width
     );
-    console.log(
-      document.documentElement.clientWidth - 32,
-      document.documentElement.clientHeight - 32
-    );
     display.render();
   };
 
   let render = function (): void {
-    display.drawMap(game.world.columns);
-    //display.fill(game.world.background_color);
+    display.drawMap(game.world.map, game.world.columns);
     display.drawPlayer(
       game.world.player,
       game.world.player.color1,
@@ -65,7 +60,7 @@ window.addEventListener("load", function () {
     { once: true }
   );
 
-  display.tile_sheet.image.src = "images/mapa.png";
+  display.tile_sheet.image.src = "images/map.png";
 
   window.addEventListener("keydown", keyDownUp);
   window.addEventListener("keyup", keyDownUp);

@@ -8,12 +8,10 @@ window.addEventListener("load", function () {
     };
     var resize = function () {
         display.resize(document.documentElement.clientWidth - 32, document.documentElement.clientHeight - 32, game.world.height / game.world.width);
-        console.log(document.documentElement.clientWidth - 32, document.documentElement.clientHeight - 32);
         display.render();
     };
     var render = function () {
-        display.drawMap(game.world.columns);
-        //display.fill(game.world.background_color);
+        display.drawMap(game.world.map, game.world.columns);
         display.drawPlayer(game.world.player, game.world.player.color1, game.world.player.color2);
         display.render();
     };
@@ -40,7 +38,7 @@ window.addEventListener("load", function () {
         resize();
         engine.start();
     }, { once: true });
-    display.tile_sheet.image.src = "images/mapa.png";
+    display.tile_sheet.image.src = "images/map.png";
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);
     window.addEventListener("resize", resize);
