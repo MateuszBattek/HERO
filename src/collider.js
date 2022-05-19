@@ -10,8 +10,20 @@ var Collider = /** @class */ (function () {
         return false;
     };
     //TO DO partly collisions
-    Collider.prototype.collidePartPlatformBottom = function (object, tile_bottom) {
-        if (object.getTop() < tile_bottom && object.getOldTop() >= tile_bottom) {
+    Collider.prototype.collideRightPlatformBottom = function (object, tile_bottom, coll_x, coll_width) {
+        if (object.getTop() < tile_bottom &&
+            object.getOldTop() >= tile_bottom &&
+            object.getLeft() < coll_x + coll_width) {
+            object.setTop(tile_bottom); //Move the top of the object to the bottom of the tile
+            object.velocity_y = 0; //Stop moving in that direction.
+            return true;
+        }
+        return false;
+    };
+    Collider.prototype.collideLeftPlatformBottom = function (object, tile_bottom, coll_x, coll_width) {
+        if (object.getTop() < tile_bottom &&
+            object.getOldTop() >= tile_bottom &&
+            object.getRight() > coll_x) {
             object.setTop(tile_bottom); //Move the top of the object to the bottom of the tile
             object.velocity_y = 0; //Stop moving in that direction.
             return true;
@@ -20,6 +32,32 @@ var Collider = /** @class */ (function () {
     };
     Collider.prototype.collidePlatformTop = function (object, tile_top) {
         if (object.getBottom() > tile_top && object.getOldBottom() <= tile_top) {
+            object.setBottom(tile_top); //Move the top of the object to the bottom of the tile
+            object.velocity_y = 0; //Stop moving in that direction.
+            object.flying = false;
+            return true;
+        }
+        return false;
+    };
+    Collider.prototype.collideRightPlatformTop = function (object, tile_top, coll_x, coll_width) {
+        console.log(object.getBottom() > tile_top, object.getOldBottom() <= tile_top, object.getLeft() < coll_x + coll_width);
+        console.log(object.getBottom(), tile_top);
+        if (
+        // object.getBottom() > tile_top &&
+        object.getOldBottom() <= tile_top &&
+            object.getLeft() < coll_x + coll_width) {
+            object.setBottom(tile_top); //Move the top of the object to the bottom of the tile
+            object.velocity_y = 0; //Stop moving in that direction.
+            object.flying = false;
+            return true;
+        }
+        return false;
+    };
+    Collider.prototype.collideLeftPlatformTop = function (object, tile_top, coll_x, coll_width) {
+        if (
+        // object.getBottom() > tile_top &&
+        object.getOldBottom() <= tile_top &&
+            object.getRight() > coll_x) {
             object.setBottom(tile_top); //Move the top of the object to the bottom of the tile
             object.velocity_y = 0; //Stop moving in that direction.
             object.flying = false;
@@ -132,24 +170,26 @@ var Collider = /** @class */ (function () {
                 this.collidePlatformLeft(object, tile_x + (3 * tile_width) / 4);
                 break;
             case 18:
-                if (this.collidePlatformBottom(object, tile_y + tile_height))
+                if (this.collideRightPlatformBottom(object, tile_y + tile_height, tile_x, tile_width / 4))
                     return;
                 this.collidePlatformRight(object, tile_x + tile_width / 4);
                 break;
             case 19:
-                if (this.collidePlatformBottom(object, tile_y + tile_height))
+                if (this.collideLeftPlatformBottom(object, tile_y + tile_height, tile_x + (3 * tile_width) / 4, tile_width / 4))
                     return;
                 this.collidePlatformLeft(object, tile_x + (3 * tile_width) / 4);
                 break;
             case 20:
-                if (this.collidePlatformTop(object, tile_y))
+                if (this.collideRightPlatformTop(object, tile_y, tile_x, tile_width / 2))
                     return;
-                // this.collidePlatformRight(object, tile_x + tile_width / 2);
+                object.flying = true;
+                this.collidePlatformRight(object, tile_x + tile_width / 2);
                 break;
             case 21:
-                if (this.collidePlatformTop(object, tile_y))
+                if (this.collideLeftPlatformTop(object, tile_y, tile_x + tile_width / 2, tile_width / 2))
                     return;
-                // this.collidePlatformLeft(object, tile_x + tile_width / 2);
+                object.flying = true;
+                this.collidePlatformLeft(object, tile_x + tile_width / 2);
                 break;
             case 22:
                 this.collidePlatformRight(object, tile_x + tile_width / 2);
