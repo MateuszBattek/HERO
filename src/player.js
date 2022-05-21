@@ -2,39 +2,53 @@ var Player = /** @class */ (function () {
     function Player() {
         this.color1 = "#404040";
         this.color2 = "#f0f0f0";
-        this.width = 80;
-        this.height = 80;
+        this.width = 60;
+        this.height = 60;
         this.flying = true;
         this.velocity_x = 0;
-        this.velocity_y = 2;
+        this.velocity_y = 0;
         this.x = 300;
         this.y = 0;
-        this.x_old = 300;
-        this.y_old = 0;
+        this.x_old = this.x;
+        this.y_old = this.y;
         this.flying_loader = 0;
+        this.falling_loader = 0;
     }
     Player.prototype.fly = function () {
-        // this.flying = true;
-        // if (this.flying_loader < 1) this.flying_loader += 0.04;
-        // else this.velocity_y = -2;
-        //this.velocity_y -= 2;
-        if (!this.flying) {
+        this.falling_loader = 0;
+        if (this.flying_loader < 1) {
+            this.flying_loader += 0.08;
+            this.velocity_y = 0;
+        }
+        else {
             this.flying = true;
-            this.velocity_y -= 100;
+            this.velocity_y = -10;
         }
     };
+    Player.prototype.fall = function () {
+        this.flying_loader = 0;
+        if (this.falling_loader < 1) {
+            this.falling_loader += 0.08;
+            this.velocity_y = 0;
+        }
+        else {
+            this.flying = true;
+            this.velocity_y = 10;
+        }
+    };
+    Player.prototype.stop = function () {
+        this.velocity_x = 0;
+    };
     Player.prototype.moveLeft = function () {
-        this.velocity_x -= 5;
+        this.velocity_x = -10;
     };
     Player.prototype.moveRight = function () {
-        this.velocity_x += 5;
+        this.velocity_x = 10;
     };
     Player.prototype.update = function () {
         this.x_old = this.x;
         this.y_old = this.y;
         this.x += this.velocity_x;
-        //this.y += this.velocity_y;
-        //if (this.velocity_y <= -4 || this.velocity_y >= 4)
         this.y += this.velocity_y;
     };
     Player.prototype.getBottom = function () {

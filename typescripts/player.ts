@@ -11,47 +11,62 @@ export class Player {
   x_old: number;
   y_old: number;
   flying_loader: number;
+  falling_loader: number;
 
   constructor() {
     this.color1 = "#404040";
     this.color2 = "#f0f0f0";
-    this.width = 80;
-    this.height = 80;
+    this.width = 60;
+    this.height = 60;
     this.flying = true;
     this.velocity_x = 0;
-    this.velocity_y = 2;
+    this.velocity_y = 0;
     this.x = 300;
     this.y = 0;
-    this.x_old = 300;
-    this.y_old = 0;
+    this.x_old = this.x;
+    this.y_old = this.y;
     this.flying_loader = 0;
+    this.falling_loader = 0;
   }
 
   fly() {
-    // this.flying = true;
-    // if (this.flying_loader < 1) this.flying_loader += 0.04;
-    // else this.velocity_y = -2;
-    //this.velocity_y -= 2;
-    if (!this.flying) {
+    this.falling_loader = 0;
+    if (this.flying_loader < 1) {
+      this.flying_loader += 0.08;
+      this.velocity_y = 0;
+    } else {
       this.flying = true;
-      this.velocity_y -= 100;
+      this.velocity_y = -10;
     }
   }
 
+  fall() {
+    this.flying_loader = 0;
+    if (this.falling_loader < 1) {
+      this.falling_loader += 0.08;
+      this.velocity_y = 0;
+    } else {
+      this.flying = true;
+      this.velocity_y = 10;
+    }
+  }
+
+  stop() {
+    this.velocity_x = 0;
+  }
+
   moveLeft() {
-    this.velocity_x -= 5;
+    this.velocity_x = -10;
   }
 
   moveRight() {
-    this.velocity_x += 5;
+    this.velocity_x = 10;
   }
 
   update() {
     this.x_old = this.x;
     this.y_old = this.y;
     this.x += this.velocity_x;
-    //this.y += this.velocity_y;
-    //if (this.velocity_y <= -4 || this.velocity_y >= 4)
     this.y += this.velocity_y;
   }
 

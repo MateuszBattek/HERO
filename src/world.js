@@ -3,12 +3,7 @@ import { Player } from "./player";
 var World = /** @class */ (function () {
     function World() {
         this.collider = new Collider();
-        (this.background_color = "rgb(40, 48, 56)"),
-            (this.friction = 0.8),
-            (this.old_flying_loader = 0),
-            (this.gravity = 4),
-            (this.player = new Player()),
-            (this.columns = 10);
+        (this.player = new Player()), (this.columns = 10);
         this.rows = 6;
         this.map = [
             0, 1, 2, 3, 4, 3, 4, 3, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
@@ -45,8 +40,8 @@ var World = /** @class */ (function () {
             object.setRight(this.width);
             object.velocity_x = 0;
         }
-        if (object.getTop() < 0) {
-            object.setTop(0);
+        if (object.getTop() < 19) {
+            object.setTop(19);
             object.velocity_y = 0;
         }
         else if (object.getBottom() > this.tile_height * this.rows + 19) {
@@ -55,28 +50,25 @@ var World = /** @class */ (function () {
             object.flying = false;
         }
         var bottom, left, right, top, value;
-        top = Math.floor(object.getTop() / this.tile_height);
+        top = Math.floor((object.getTop() - 19) / this.tile_height);
         left = Math.floor(object.getLeft() / this.tile_width);
         value = this.collision_map[top * this.columns + left];
         this.collider.collide(value, object, left * this.tile_width, top * this.tile_height, this.tile_width, this.tile_height);
-        top = Math.floor(object.getTop() / this.tile_height);
+        top = Math.floor((object.getTop() - 19) / this.tile_height);
         right = Math.floor(object.getRight() / this.tile_width);
         value = this.collision_map[top * this.columns + right];
         this.collider.collide(value, object, right * this.tile_width, top * this.tile_height, this.tile_width, this.tile_height);
-        bottom = Math.floor(object.getBottom() / this.tile_height);
+        bottom = Math.floor((object.getBottom() - 19) / this.tile_height);
         left = Math.floor(object.getLeft() / this.tile_width);
         value = this.collision_map[bottom * this.columns + left];
         this.collider.collide(value, object, left * this.tile_width, bottom * this.tile_height, this.tile_width, this.tile_height);
-        bottom = Math.floor(object.getBottom() / this.tile_height);
+        bottom = Math.floor((object.getBottom() - 19) / this.tile_height);
         right = Math.floor(object.getRight() / this.tile_width);
         value = this.collision_map[bottom * this.columns + right];
         this.collider.collide(value, object, right * this.tile_width, bottom * this.tile_height, this.tile_width, this.tile_height);
     };
     World.prototype.update = function () {
-        this.player.velocity_y += this.gravity;
         this.player.update();
-        this.player.velocity_x *= this.friction;
-        this.player.velocity_y *= this.friction;
         this.collideObject(this.player);
     };
     return World;

@@ -16,15 +16,21 @@ window.addEventListener("load", function () {
         display.render();
     };
     var update = function () {
-        if (controller.left.active) {
-            game.world.player.moveLeft();
+        if (controller.left.active || controller.right.active) {
+            if (controller.left.active)
+                game.world.player.moveLeft();
+            else
+                game.world.player.moveRight();
         }
-        if (controller.right.active) {
-            game.world.player.moveRight();
+        else {
+            game.world.player.stop();
         }
         if (controller.up.active) {
             game.world.player.fly();
             //controller.up.active = false;
+        }
+        else {
+            game.world.player.fall();
         }
         game.update();
     };
