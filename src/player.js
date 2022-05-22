@@ -1,18 +1,39 @@
-var Player = /** @class */ (function () {
-    function Player() {
-        this.color1 = "#404040";
-        this.color2 = "#f0f0f0";
-        this.width = 60;
-        this.height = 60;
-        this.flying = true;
-        this.velocity_x = 0;
-        this.velocity_y = 0;
-        this.x = 300;
-        this.y = 0;
-        this.x_old = this.x;
-        this.y_old = this.y;
-        this.flying_loader = 0;
-        this.falling_loader = 0;
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+import { Animator } from "./animator";
+var Player = /** @class */ (function (_super) {
+    __extends(Player, _super);
+    function Player(x, y, frame_sets) {
+        var _this = _super.call(this, frame_sets["fly-left"], 10) || this;
+        _this.color1 = "#404040";
+        _this.color2 = "#f0f0f0";
+        _this.width = 80;
+        _this.height = 90;
+        _this.flying = true;
+        _this.velocity_x = 0;
+        _this.velocity_y = 0;
+        _this.x = x;
+        _this.y = y;
+        _this.x_old = _this.x;
+        _this.y_old = _this.y;
+        _this.flying_loader = 0;
+        _this.falling_loader = 0;
+        _this.direction_x = 1;
+        _this.frame_sets = frame_sets;
+        return _this;
     }
     Player.prototype.fly = function () {
         this.falling_loader = 0;
@@ -40,12 +61,35 @@ var Player = /** @class */ (function () {
         this.velocity_x = 0;
     };
     Player.prototype.moveLeft = function () {
+        this.direction_x = -1;
         this.velocity_x = -10;
     };
     Player.prototype.moveRight = function () {
+        this.direction_x = 1;
         this.velocity_x = 10;
     };
-    Player.prototype.update = function () {
+    Player.prototype.updateAnimation = function () {
+        if (this.flying) {
+            if (this.direction_x < 0)
+                this.changeFrameSet(this.frame_sets["fly-left"], "pause");
+            else
+                this.changeFrameSet(this.frame_sets["fly-right"], "pause");
+        }
+        else if (this.direction_x < 0) {
+            if (this.velocity_x < 0)
+                this.changeFrameSet(this.frame_sets["walk-left"], "loop", 5);
+            else
+                this.changeFrameSet(this.frame_sets["idle-left"], "pause");
+        }
+        else if (this.direction_x > 0) {
+            if (this.velocity_x > 0)
+                this.changeFrameSet(this.frame_sets["walk-right"], "loop", 5);
+            else
+                this.changeFrameSet(this.frame_sets["idle-right"], "pause");
+        }
+        this.animate();
+    };
+    Player.prototype.updatePosition = function () {
         this.x_old = this.x;
         this.y_old = this.y;
         this.x += this.velocity_x;
@@ -100,5 +144,5 @@ var Player = /** @class */ (function () {
         this.y_old = y;
     };
     return Player;
-}());
+}(Animator));
 export { Player };

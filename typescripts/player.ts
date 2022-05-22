@@ -1,4 +1,8 @@
-export class Player {
+import { Animator } from "./animator";
+import { Frame } from "./frame";
+import { Frame_Sets } from "./frame_sets_interface";
+
+export class Player extends Animator {
   color1: string;
   color2: string;
   width: number;
@@ -12,21 +16,26 @@ export class Player {
   y_old: number;
   flying_loader: number;
   falling_loader: number;
+  direction_x: number;
+  frame_sets: Frame_Sets;
 
-  constructor() {
+  constructor(x: number, y: number, frame_sets: Frame_Sets) {
+    super(frame_sets["fly-left"], 10);
     this.color1 = "#404040";
     this.color2 = "#f0f0f0";
-    this.width = 60;
-    this.height = 60;
+    this.width = 80;
+    this.height = 90;
     this.flying = true;
     this.velocity_x = 0;
     this.velocity_y = 0;
-    this.x = 300;
-    this.y = 0;
+    this.x = x;
+    this.y = y;
     this.x_old = this.x;
     this.y_old = this.y;
     this.flying_loader = 0;
     this.falling_loader = 0;
+    this.direction_x = 1;
+    this.frame_sets = frame_sets;
   }
 
   fly() {
@@ -56,14 +65,34 @@ export class Player {
   }
 
   moveLeft() {
+    this.direction_x = -1;
     this.velocity_x = -10;
   }
 
   moveRight() {
+    this.direction_x = 1;
     this.velocity_x = 10;
   }
 
-  update() {
+  updateAnimation() {
+    if (this.flying) {
+      if (this.direction_x < 0)
+        this.changeFrameSet(this.frame_sets["fly-left"], "pause");
+      else this.changeFrameSet(this.frame_sets["fly-right"], "pause");
+    } else if (this.direction_x < 0) {
+      if (this.velocity_x < 0)
+        this.changeFrameSet(this.frame_sets["walk-left"], "loop", 5);
+      else this.changeFrameSet(this.frame_sets["idle-left"], "pause");
+    } else if (this.direction_x > 0) {
+      if (this.velocity_x > 0)
+        this.changeFrameSet(this.frame_sets["walk-right"], "loop", 5);
+      else this.changeFrameSet(this.frame_sets["idle-right"], "pause");
+    }
+
+    this.animate();
+  }
+
+  updatePosition() {
     this.x_old = this.x;
     this.y_old = this.y;
     this.x += this.velocity_x;

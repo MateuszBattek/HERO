@@ -2,17 +2,23 @@ import { Controller } from "./controller";
 import { Display } from "./display";
 import { Engine } from "./engine";
 import { Game } from "./game";
+import { AssetsManager } from "./assetsManager";
 window.addEventListener("load", function () {
     var keyDownUp = function (event) {
         controller.keyDownUp(event.type, event.code);
     };
     var resize = function () {
-        display.resize(document.documentElement.clientWidth - 32, document.documentElement.clientHeight - 32, game.world.height / game.world.width);
+        display.resize(document.documentElement.clientWidth, document.documentElement.clientHeight, game.world.height / game.world.width);
         display.render();
     };
     var render = function () {
-        display.drawMap(game.world.map, game.world.columns);
-        display.drawPlayer(game.world.player, game.world.player.color1, game.world.player.color2);
+        display.drawMap(
+        //display.tile_sheet.image,
+        assets_manager.tile_set_image, game.world.tile_set.columns, game.world.map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        var frame = game.world.tile_set.frames[game.world.player.frame_value];
+        display.drawObject(assets_manager.tile_set_image, frame.x, frame.y, game.world.player.x +
+            Math.floor(game.world.player.width * 0.5 - frame.width * 0.5), game.world.player.y, frame.width, frame.height);
+        //display.drawPlayer(game.world.player, "#555555", "#ffffff");
         display.render();
     };
     var update = function () {
@@ -34,17 +40,27 @@ window.addEventListener("load", function () {
         }
         game.update();
     };
+    var assets_manager = new AssetsManager();
     var controller = new Controller();
     var display = new Display(document.querySelector("canvas"));
     var game = new Game();
     var engine = new Engine(1000 / 30, render, update);
     display.buffer.canvas.height = game.world.height;
     display.buffer.canvas.width = game.world.width;
-    display.tile_sheet.image.addEventListener("load", function () {
+    display.buffer.imageSmoothingEnabled = false;
+    // display.tile_sheet.image.addEventListener(
+    //   "load",
+    //   function () {
+    //     resize();
+    //     engine.start();
+    //   },
+    //   { once: true }
+    // );
+    // display.tile_sheet.image.src = "images/map.png";
+    assets_manager.loadTileSetImage("images/map.png", function () {
         resize();
         engine.start();
-    }, { once: true });
-    display.tile_sheet.image.src = "images/map.png";
+    });
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);
     window.addEventListener("resize", resize);

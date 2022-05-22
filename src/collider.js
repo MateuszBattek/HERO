@@ -43,7 +43,7 @@ var Collider = /** @class */ (function () {
         if (object.getBottom() > tile_top &&
             object.getOldBottom() <= tile_top &&
             object.getLeft() < coll_x + coll_width) {
-            object.setBottom(tile_top); //Move the top of the object to the bottom of the tile
+            object.setBottom(tile_top - 0.01); //Move the top of the object to the bottom of the tile
             object.velocity_y = 0; //Stop moving in that direction.
             object.flying = false;
             return true;
@@ -55,7 +55,7 @@ var Collider = /** @class */ (function () {
         if (object.getBottom() > tile_top &&
             object.getOldBottom() <= tile_top &&
             object.getRight() > coll_x) {
-            object.setBottom(tile_top);
+            object.setBottom(tile_top - 0.01);
             object.velocity_y = 0;
             object.flying = false;
             return true;
