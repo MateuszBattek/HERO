@@ -12,12 +12,11 @@ window.addEventListener("load", function () {
         display.render();
     };
     var render = function () {
-        display.drawMap(
-        //display.tile_sheet.image,
-        assets_manager.tile_set_image, game.world.tile_set.columns, game.world.map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
-        var frame = game.world.tile_set.frames[game.world.player.frame_value];
-        display.drawObject(assets_manager.tile_set_image, frame.x, frame.y, game.world.player.x +
-            Math.floor(game.world.player.width * 0.5 - frame.width * 0.5), game.world.player.y, frame.width, frame.height);
+        display.drawMap(assets_manager.tile_set_image, game.world.tile_set.columns, game.world.map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
+        display.drawObject(assets_manager.tile_set_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
+        var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];
+        display.drawObject(assets_manager.tile_set_image, player_frame.x, player_frame.y, game.world.player.x, game.world.player.y, player_frame.width, player_frame.height, 69, 97);
         //display.drawPlayer(game.world.player, "#555555", "#ffffff");
         display.render();
     };
@@ -47,7 +46,7 @@ window.addEventListener("load", function () {
     var engine = new Engine(1000 / 30, render, update);
     display.buffer.canvas.height = game.world.height;
     display.buffer.canvas.width = game.world.width;
-    display.buffer.imageSmoothingEnabled = false;
+    display.buffer.imageSmoothingEnabled = true;
     // display.tile_sheet.image.addEventListener(
     //   "load",
     //   function () {

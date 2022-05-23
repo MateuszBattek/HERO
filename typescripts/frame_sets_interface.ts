@@ -1,4 +1,4 @@
-export interface Frame_Sets {
+export interface Player_Sets {
   "fly-right": number[];
   "walk-right": number[];
   "idle-right": number[];

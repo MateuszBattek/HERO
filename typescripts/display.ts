@@ -1,15 +1,10 @@
-import { Player } from "./player";
-import { TileSheet } from "./tileSheet";
-
 export class Display {
   buffer: CanvasRenderingContext2D;
   context: CanvasRenderingContext2D;
-  tile_sheet: TileSheet;
 
   constructor(canvas: HTMLCanvasElement) {
     this.buffer = document.createElement("canvas").getContext("2d")!;
     this.context = canvas.getContext("2d")!;
-    this.tile_sheet = new TileSheet(164, 95, 10);
   }
 
   // drawPlayer(rectangle: Player, color1: string, color2: string) {
@@ -35,6 +30,8 @@ export class Display {
     source_y: number,
     destination_x: number,
     destination_y: number,
+    source_width: number,
+    source_height: number,
     width: number,
     height: number
   ) {
@@ -42,12 +39,12 @@ export class Display {
       image,
       source_x,
       source_y,
-      width,
-      height,
+      source_width,
+      source_height,
       Math.round(destination_x),
       Math.round(destination_y),
-      80,
-      90
+      width,
+      height
     );
   }
 
@@ -125,6 +122,6 @@ export class Display {
       this.context.canvas.width = height / height_width_ratio;
     }
 
-    this.context.imageSmoothingEnabled = false;
+    this.context.imageSmoothingEnabled = true;
   }
 }

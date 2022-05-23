@@ -1,9 +1,7 @@
-import { TileSheet } from "./tileSheet";
 var Display = /** @class */ (function () {
     function Display(canvas) {
         this.buffer = document.createElement("canvas").getContext("2d");
         this.context = canvas.getContext("2d");
-        this.tile_sheet = new TileSheet(164, 95, 10);
     }
     // drawPlayer(rectangle: Player, color1: string, color2: string) {
     //   this.buffer.fillStyle = color1;
@@ -21,8 +19,8 @@ var Display = /** @class */ (function () {
     //     rectangle.height - 40
     //   );
     // }
-    Display.prototype.drawObject = function (image, source_x, source_y, destination_x, destination_y, width, height) {
-        this.buffer.drawImage(image, source_x, source_y, width, height, Math.round(destination_x), Math.round(destination_y), 80, 90);
+    Display.prototype.drawObject = function (image, source_x, source_y, destination_x, destination_y, source_width, source_height, width, height) {
+        this.buffer.drawImage(image, source_x, source_y, source_width, source_height, Math.round(destination_x), Math.round(destination_y), width, height);
     };
     Display.prototype.drawMap = function (image, image_columns, map, map_columns, tile_width, tile_height) {
         //top
@@ -59,7 +57,7 @@ var Display = /** @class */ (function () {
             this.context.canvas.height = height;
             this.context.canvas.width = height / height_width_ratio;
         }
-        this.context.imageSmoothingEnabled = false;
+        this.context.imageSmoothingEnabled = true;
     };
     return Display;
 }());

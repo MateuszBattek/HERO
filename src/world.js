@@ -4,7 +4,7 @@ import { TileSet } from "./tileSet";
 var World = /** @class */ (function () {
     function World() {
         this.collider = new Collider();
-        this.frame_sets = {
+        this.player_sets = {
             "fly-right": [0],
             "walk-right": [1, 2, 3, 4, 5],
             "idle-right": [6],
@@ -12,7 +12,7 @@ var World = /** @class */ (function () {
             "walk-left": [8, 9, 10, 11, 12],
             "idle-left": [13],
         };
-        (this.player = new Player(300, 0, this.frame_sets)), (this.columns = 10);
+        (this.player = new Player(300, 19, this.player_sets)), (this.columns = 10);
         this.rows = 6;
         this.tile_set = new TileSet(10, 164, 95);
         this.map = [
@@ -48,8 +48,8 @@ var World = /** @class */ (function () {
             object.setRight(this.width);
             object.velocity_x = 0;
         }
-        if (object.getTop() < 0) {
-            object.setTop(0);
+        if (object.getTop() < 19) {
+            object.setTop(19);
             object.velocity_y = 0;
         }
         else if (object.getBottom() >

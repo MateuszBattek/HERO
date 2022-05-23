@@ -1,6 +1,7 @@
 import { Animator } from "./animator";
 import { Frame } from "./frame";
-import { Frame_Sets } from "./frame_sets_interface";
+import { Player_Sets } from "./frame_sets_interface";
+import { Helicopter } from "./helicopter";
 
 export class Player extends Animator {
   color1: string;
@@ -17,14 +18,15 @@ export class Player extends Animator {
   flying_loader: number;
   falling_loader: number;
   direction_x: number;
-  frame_sets: Frame_Sets;
+  player_sets: Player_Sets;
+  helicopter: Helicopter;
 
-  constructor(x: number, y: number, frame_sets: Frame_Sets) {
-    super(frame_sets["fly-left"], 10);
+  constructor(x: number, y: number, player_sets: Player_Sets) {
+    super(player_sets["fly-left"], 10);
     this.color1 = "#404040";
     this.color2 = "#f0f0f0";
-    this.width = 80;
-    this.height = 90;
+    this.width = 69;
+    this.height = 97;
     this.flying = true;
     this.velocity_x = 0;
     this.velocity_y = 0;
@@ -35,11 +37,14 @@ export class Player extends Animator {
     this.flying_loader = 0;
     this.falling_loader = 0;
     this.direction_x = 1;
-    this.frame_sets = frame_sets;
+    this.player_sets = player_sets;
+    this.helicopter = new Helicopter(x, y, 32 * 1.5, 9 * 1.5);
   }
 
   fly() {
+    this.helicopter.animation_delay = 1;
     this.falling_loader = 0;
+    if (this.flying_loader == 0) this.helicopter.delay = 1;
     if (this.flying_loader < 1) {
       this.flying_loader += 0.08;
       this.velocity_y = 0;
@@ -50,6 +55,7 @@ export class Player extends Animator {
   }
 
   fall() {
+    this.helicopter.animation_delay = 5;
     this.flying_loader = 0;
     if (this.falling_loader < 1) {
       this.falling_loader += 0.08;
@@ -57,6 +63,7 @@ export class Player extends Animator {
     } else {
       this.flying = true;
       this.velocity_y = 10;
+      this.helicopter.delay = 5;
     }
   }
 
@@ -77,19 +84,23 @@ export class Player extends Animator {
   updateAnimation() {
     if (this.flying) {
       if (this.direction_x < 0)
-        this.changeFrameSet(this.frame_sets["fly-left"], "pause");
-      else this.changeFrameSet(this.frame_sets["fly-right"], "pause");
+        this.changeFrameSet(this.player_sets["fly-left"], "pause");
+      else this.changeFrameSet(this.player_sets["fly-right"], "pause");
     } else if (this.direction_x < 0) {
       if (this.velocity_x < 0)
-        this.changeFrameSet(this.frame_sets["walk-left"], "loop", 5);
-      else this.changeFrameSet(this.frame_sets["idle-left"], "pause");
+        this.changeFrameSet(this.player_sets["walk-left"], "loop", 2);
+      else this.changeFrameSet(this.player_sets["idle-left"], "pause");
     } else if (this.direction_x > 0) {
       if (this.velocity_x > 0)
-        this.changeFrameSet(this.frame_sets["walk-right"], "loop", 5);
-      else this.changeFrameSet(this.frame_sets["idle-right"], "pause");
+        this.changeFrameSet(this.player_sets["walk-right"], "loop", 2);
+      else this.changeFrameSet(this.player_sets["idle-right"], "pause");
     }
 
     this.animate();
+    this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+    this.helicopter.y = this.y - 12;
+    this.helicopter.updateAnimation();
+    this.helicopter.animate();
   }
 
   updatePosition() {

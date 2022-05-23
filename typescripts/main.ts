@@ -20,7 +20,6 @@ window.addEventListener("load", function () {
 
   let render = function (): void {
     display.drawMap(
-      //display.tile_sheet.image,
       assets_manager.tile_set_image,
       game.world.tile_set.columns,
       game.world.map,
@@ -29,17 +28,36 @@ window.addEventListener("load", function () {
       game.world.tile_set.tile_height
     );
 
-    let frame = game.world.tile_set.frames[game.world.player.frame_value];
+    let helicopter_frame =
+      game.world.tile_set.helicopter_frames[
+        game.world.player.helicopter.frame_value
+      ];
 
     display.drawObject(
       assets_manager.tile_set_image,
-      frame.x,
-      frame.y,
-      game.world.player.x +
-        Math.floor(game.world.player.width * 0.5 - frame.width * 0.5),
+      helicopter_frame.x,
+      helicopter_frame.y,
+      game.world.player.helicopter.x,
+      game.world.player.helicopter.y,
+      helicopter_frame.width,
+      helicopter_frame.height,
+      48,
+      13
+    );
+
+    let player_frame =
+      game.world.tile_set.player_frames[game.world.player.frame_value];
+
+    display.drawObject(
+      assets_manager.tile_set_image,
+      player_frame.x,
+      player_frame.y,
+      game.world.player.x,
       game.world.player.y,
-      frame.width,
-      frame.height
+      player_frame.width,
+      player_frame.height,
+      69,
+      97
     );
 
     //display.drawPlayer(game.world.player, "#555555", "#ffffff");
@@ -71,7 +89,7 @@ window.addEventListener("load", function () {
 
   display.buffer.canvas.height = game.world.height;
   display.buffer.canvas.width = game.world.width;
-  display.buffer.imageSmoothingEnabled = false;
+  display.buffer.imageSmoothingEnabled = true;
 
   // display.tile_sheet.image.addEventListener(
   //   "load",
