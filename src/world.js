@@ -1,4 +1,5 @@
 import { Collider } from "./collider";
+import { Door } from "./door";
 import { Player } from "./player";
 import { TileSet } from "./tileSet";
 var World = /** @class */ (function () {
@@ -14,50 +15,46 @@ var World = /** @class */ (function () {
         };
         (this.player = new Player(300, 19, this.player_sets)), (this.columns = 10);
         this.rows = 6;
+        this.level = "1";
+        this.zone_id = "0";
+        this.doors = [];
+        this.door = undefined;
         this.tile_set = new TileSet(10, 164, 95);
-        this.map = [
-            0, 1, 2, 3, 4, 3, 4, 3, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-            17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-            35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 45, 46, 47, 48, 45, 46,
-            45, 46,
-        ];
-        //Collisions System
-        /*
-            0: full air
-            1: full block
-            2: left half block
-            3: right half block
-            4: left little part block
-            5: right little part block
-        */
-        this.collision_map = [
-            0, 16, 17, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 4, 4, 4, 4, 4, 4, 0, 2, 0, 0,
-            0, 0, 0, 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 1, 1, 1, 20, 21, 1,
-            1, 1, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0,
-        ];
+        // this.graphical_map = [
+        //   0, 1, 2, 3, 4, 3, 4, 3, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+        //   17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+        //   35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 45, 46, 47, 48, 45, 46,
+        //   45, 46,
+        // ];
+        // this.collision_map = [
+        //   0, 16, 17, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 4, 4, 4, 4, 4, 4, 0, 2, 0, 0,
+        //   0, 0, 0, 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 1, 1, 1, 20, 21, 1,
+        //   1, 1, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0,
+        // ];
         this.height = this.tile_set.tile_height * this.rows + 369;
         this.width = this.tile_set.tile_width * this.columns;
     }
     World.prototype.collideObject = function (object) {
         /* Let's make sure we can't leave the world boundaries. */
-        if (object.getLeft() < 0) {
-            object.setLeft(0);
-            object.velocity_x = 0;
-        }
-        else if (object.getRight() > this.width) {
-            object.setRight(this.width);
-            object.velocity_x = 0;
-        }
+        // if (object.getLeft() < 0) {
+        //   object.setLeft(0);
+        //   object.velocity_x = 0;
+        // } else if (object.getRight() > this.width) {
+        //   object.setRight(this.width);
+        //   object.velocity_x = 0;
+        // }
         if (object.getTop() < 19) {
             object.setTop(19);
             object.velocity_y = 0;
         }
-        else if (object.getBottom() >
-            this.tile_set.tile_height * this.rows + 19) {
-            object.setBottom(this.tile_set.tile_height * this.rows + 19);
-            object.velocity_y = 0;
-            object.flying = false;
-        }
+        // else if (
+        //   object.getBottom() >
+        //   this.tile_set.tile_height * this.rows + 19
+        // ) {
+        //   object.setBottom(this.tile_set.tile_height * this.rows + 19);
+        //   object.velocity_y = 0;
+        //   object.flying = false;
+        // }
         var bottom, left, right, top, value;
         top = Math.floor((object.getTop() - 19) / this.tile_set.tile_height);
         left = Math.floor(object.getLeft() / this.tile_set.tile_width);
@@ -76,9 +73,46 @@ var World = /** @class */ (function () {
         value = this.collision_map[bottom * this.columns + right];
         this.collider.collide(value, object, right * this.tile_set.tile_width, bottom * this.tile_set.tile_height, this.tile_set.tile_width, this.tile_set.tile_height);
     };
+    World.prototype.setup = function (zone) {
+        //Get the new tile maps, the new zone, and reset the doors array.
+        this.graphical_map = zone.graphical_map;
+        this.collision_map = zone.collision_map;
+        this.columns = zone.columns;
+        this.rows = zone.rows;
+        this.doors = new Array();
+        this.zone_id = zone.id;
+        //Generate new doors.
+        for (var index = zone.doors.length - 1; index > -1; --index) {
+            var door = zone.doors[index];
+            this.doors[index] = new Door(door);
+        }
+        /* If the player entered into a door, this.door will reference that door.
+           Here it will be used to set player's location to the door's destination. */
+        if (this.door) {
+            /* If a destination is equal to -1, that means it won't be used. Since
+               each zone spans from 0 to its width and height, any negative number would
+               be invalid. If a door's destination is -1, the player will keep his current
+               position for that axis. */
+            if (this.door.destination_x != -1) {
+                this.player.setCenterX(this.door.destination_x);
+                this.player.setOldCenterX(this.door.destination_x); // It's important to reset the old position as well.
+            }
+            if (this.door.destination_y != -1) {
+                this.player.setCenterY(this.door.destination_y);
+                this.player.setOldCenterY(this.door.destination_y);
+            }
+            this.door = undefined; // Make sure to reset this.door so we don't trigger a zone load.
+        }
+    };
     World.prototype.update = function () {
         this.player.updatePosition();
         this.collideObject(this.player);
+        for (var index = this.doors.length - 1; index > -1; --index) {
+            var door = this.doors[index];
+            if (door.collideObject(this.player)) {
+                this.door = door;
+            }
+        }
         this.player.updateAnimation();
     };
     return World;

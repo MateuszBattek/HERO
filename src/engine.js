@@ -13,6 +13,7 @@ var Engine = /** @class */ (function () {
         };
     }
     Engine.prototype.run = function (time_stamp) {
+        this.animation_frame_request = window.requestAnimationFrame(this.handleRun);
         // This is one cycle of the game loop
         this.accumulated_time += time_stamp - this.time;
         this.time = time_stamp;
@@ -39,7 +40,6 @@ var Engine = /** @class */ (function () {
             this.updated = false;
             this.render(time_stamp);
         }
-        this.animation_frame_request = window.requestAnimationFrame(this.handleRun);
     };
     Engine.prototype.start = function () {
         this.accumulated_time = this.time_step;

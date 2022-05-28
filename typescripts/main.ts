@@ -3,8 +3,12 @@ import { Display } from "./display";
 import { Engine } from "./engine";
 import { Game } from "./game";
 import { AssetsManager } from "./assetsManager";
+import { Level } from "./level_interface";
+import { File } from "./file_interface";
 
 window.addEventListener("load", function () {
+  "use strict";
+
   let keyDownUp = function (event: KeyboardEvent): void {
     controller.keyDownUp(event.type, event.code);
   };
@@ -22,7 +26,7 @@ window.addEventListener("load", function () {
     display.drawMap(
       assets_manager.tile_set_image,
       game.world.tile_set.columns,
-      game.world.map,
+      game.world.graphical_map,
       game.world.columns,
       game.world.tile_set.tile_width,
       game.world.tile_set.tile_height
@@ -78,6 +82,15 @@ window.addEventListener("load", function () {
       game.world.player.fall();
     }
 
+    if (game.world.door) {
+      engine.stop();
+      assets_manager.requestJSON("../levels.json", (file: File) => {
+        game.world.setup(file.levels[0].zones[0]);
+
+        engine.start();
+      });
+    }
+
     game.update();
   };
 
@@ -103,9 +116,13 @@ window.addEventListener("load", function () {
 
   // display.tile_sheet.image.src = "images/map.png";
 
-  assets_manager.loadTileSetImage("images/map.png", () => {
-    resize();
-    engine.start();
+  assets_manager.requestJSON("../levels.json", (file: File) => {
+    game.world.setup(file.levels[0].zones[0]);
+
+    assets_manager.loadTileSetImage("images/map.png", () => {
+      resize();
+      engine.start();
+    });
   });
 
   window.addEventListener("keydown", keyDownUp);

@@ -97,8 +97,7 @@ export class Player extends Animator {
     }
 
     this.animate();
-    this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
-    this.helicopter.y = this.y - 12;
+    this.updateHelicopterPosition();
     this.helicopter.updateAnimation();
     this.helicopter.animate();
   }
@@ -108,6 +107,11 @@ export class Player extends Animator {
     this.y_old = this.y;
     this.x += this.velocity_x;
     this.y += this.velocity_y;
+  }
+
+  updateHelicopterPosition() {
+    this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+    this.helicopter.y = this.y - 12;
   }
 
   getBottom() {
@@ -142,6 +146,22 @@ export class Player extends Animator {
     return this.y_old;
   }
 
+  getCenterX() {
+    return this.x + this.width * 0.5;
+  }
+
+  getCenterY() {
+    return this.y + this.height * 0.5;
+  }
+
+  getOldCenterX() {
+    return this.x_old + this.width * 0.5;
+  }
+
+  getOldCenterY() {
+    return this.y_old + this.height * 0.5;
+  }
+
   setBottom(y: number) {
     this.y = y - this.height;
   }
@@ -172,5 +192,21 @@ export class Player extends Animator {
 
   setOldTop(y: number) {
     this.y_old = y;
+  }
+
+  setCenterX(x: number) {
+    this.x = x - this.width * 0.5;
+  }
+
+  setCenterY(y: number) {
+    this.y = y - this.height * 0.5;
+  }
+
+  setOldCenterX(x: number) {
+    this.x_old = x - this.width * 0.5;
+  }
+
+  setOldCenterY(y: number) {
+    this.y_old = y - this.height * 0.5;
   }
 }

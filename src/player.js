@@ -95,8 +95,7 @@ var Player = /** @class */ (function (_super) {
                 this.changeFrameSet(this.player_sets["idle-right"], "pause");
         }
         this.animate();
-        this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
-        this.helicopter.y = this.y - 12;
+        this.updateHelicopterPosition();
         this.helicopter.updateAnimation();
         this.helicopter.animate();
     };
@@ -105,6 +104,10 @@ var Player = /** @class */ (function (_super) {
         this.y_old = this.y;
         this.x += this.velocity_x;
         this.y += this.velocity_y;
+    };
+    Player.prototype.updateHelicopterPosition = function () {
+        this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+        this.helicopter.y = this.y - 12;
     };
     Player.prototype.getBottom = function () {
         return this.y + this.height;
@@ -130,6 +133,18 @@ var Player = /** @class */ (function (_super) {
     Player.prototype.getOldTop = function () {
         return this.y_old;
     };
+    Player.prototype.getCenterX = function () {
+        return this.x + this.width * 0.5;
+    };
+    Player.prototype.getCenterY = function () {
+        return this.y + this.height * 0.5;
+    };
+    Player.prototype.getOldCenterX = function () {
+        return this.x_old + this.width * 0.5;
+    };
+    Player.prototype.getOldCenterY = function () {
+        return this.y_old + this.height * 0.5;
+    };
     Player.prototype.setBottom = function (y) {
         this.y = y - this.height;
     };
@@ -153,6 +168,18 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.setOldTop = function (y) {
         this.y_old = y;
+    };
+    Player.prototype.setCenterX = function (x) {
+        this.x = x - this.width * 0.5;
+    };
+    Player.prototype.setCenterY = function (y) {
+        this.y = y - this.height * 0.5;
+    };
+    Player.prototype.setOldCenterX = function (x) {
+        this.x_old = x - this.width * 0.5;
+    };
+    Player.prototype.setOldCenterY = function (y) {
+        this.y_old = y - this.height * 0.5;
     };
     return Player;
 }(Animator));

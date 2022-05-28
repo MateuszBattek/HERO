@@ -109,17 +109,17 @@ var Collider = /** @class */ (function () {
                     return;
                 break;
             case 6:
-                if (this.collidePlatformRight(object, tile_x + tile_width))
-                    return;
                 if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
+                if (this.collidePlatformRight(object, tile_x + tile_width))
                     return;
                 break;
             case 7:
                 if (this.collidePlatformTop(object, tile_y))
                     return;
-                if (this.collidePlatformRight(object, tile_x + tile_width))
-                    return;
                 if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
+                if (this.collidePlatformRight(object, tile_x + tile_width))
                     return;
                 break;
             case 8:
@@ -147,35 +147,35 @@ var Collider = /** @class */ (function () {
                     return;
                 break;
             case 12:
-                if (this.collidePlatformLeft(object, tile_x))
-                    return;
                 if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
+                if (this.collidePlatformLeft(object, tile_x))
                     return;
                 break;
             case 13:
                 if (this.collidePlatformTop(object, tile_y))
                     return;
-                if (this.collidePlatformLeft(object, tile_x))
-                    return;
                 if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
+                if (this.collidePlatformLeft(object, tile_x))
                     return;
                 break;
             case 14:
+                if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
                 if (this.collidePlatformLeft(object, tile_x))
                     return;
                 if (this.collidePlatformRight(object, tile_x))
-                    return;
-                if (this.collidePlatformBottom(object, tile_y + tile_height))
                     return;
                 break;
             case 15:
                 if (this.collidePlatformTop(object, tile_y))
                     return;
+                if (this.collidePlatformBottom(object, tile_y + tile_height))
+                    return;
                 if (this.collidePlatformLeft(object, tile_x))
                     return;
                 if (this.collidePlatformRight(object, tile_x + tile_width))
-                    return;
-                if (this.collidePlatformBottom(object, tile_y + tile_height))
                     return;
                 break;
             case 16:

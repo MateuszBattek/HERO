@@ -4,6 +4,7 @@ import { Engine } from "./engine";
 import { Game } from "./game";
 import { AssetsManager } from "./assetsManager";
 window.addEventListener("load", function () {
+    "use strict";
     var keyDownUp = function (event) {
         controller.keyDownUp(event.type, event.code);
     };
@@ -12,7 +13,7 @@ window.addEventListener("load", function () {
         display.render();
     };
     var render = function () {
-        display.drawMap(assets_manager.tile_set_image, game.world.tile_set.columns, game.world.map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        display.drawMap(assets_manager.tile_set_image, game.world.tile_set.columns, game.world.graphical_map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
         var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
         display.drawObject(assets_manager.tile_set_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
         var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];
@@ -37,6 +38,13 @@ window.addEventListener("load", function () {
         else {
             game.world.player.fall();
         }
+        if (game.world.door) {
+            engine.stop();
+            assets_manager.requestJSON("../levels.json", function (file) {
+                game.world.setup(file.levels[0].zones[0]);
+                engine.start();
+            });
+        }
         game.update();
     };
     var assets_manager = new AssetsManager();
@@ -56,9 +64,12 @@ window.addEventListener("load", function () {
     //   { once: true }
     // );
     // display.tile_sheet.image.src = "images/map.png";
-    assets_manager.loadTileSetImage("images/map.png", function () {
-        resize();
-        engine.start();
+    assets_manager.requestJSON("../levels.json", function (file) {
+        game.world.setup(file.levels[0].zones[0]);
+        assets_manager.loadTileSetImage("images/map.png", function () {
+            resize();
+            engine.start();
+        });
     });
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);

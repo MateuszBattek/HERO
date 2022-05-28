@@ -25,6 +25,8 @@ export class Engine {
   }
 
   run(time_stamp: number) {
+    this.animation_frame_request = window.requestAnimationFrame(this.handleRun);
+
     // This is one cycle of the game loop
     this.accumulated_time += time_stamp - this.time;
     this.time = time_stamp;
@@ -55,8 +57,6 @@ export class Engine {
       this.updated = false;
       this.render(time_stamp);
     }
-
-    this.animation_frame_request = window.requestAnimationFrame(this.handleRun);
   }
 
   start() {
