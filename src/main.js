@@ -14,6 +14,7 @@ window.addEventListener("load", function () {
     };
     var render = function () {
         display.drawMap(assets_manager.tile_set_image, assets_manager.rest_map_image, game.world.top_coords, game.world.tile_set.columns, game.world.graphical_map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        display.drawTimebar(assets_manager.rest_map_image, 288, 661, Math.round((1315 * game.world.time_limit) / 128), 25);
         var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
         display.drawObject(assets_manager.hero_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
         var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];

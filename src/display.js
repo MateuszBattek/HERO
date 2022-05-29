@@ -41,6 +41,9 @@ var Display = /** @class */ (function () {
         //footer
         this.buffer.drawImage(rest_image, 0, 329, 1640, 59, 0, 880, 1640, 59);
     };
+    Display.prototype.drawTimebar = function (image, x, y, width, height) {
+        this.buffer.drawImage(image, 0, 388, 1315, 25, x, y, width, height);
+    };
     Display.prototype.fill = function (color) {
         this.buffer.fillStyle = color;
         this.buffer.fillRect(0, 0, this.buffer.canvas.width, this.buffer.canvas.height);

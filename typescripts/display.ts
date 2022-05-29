@@ -91,6 +91,16 @@ export class Display {
     this.buffer.drawImage(rest_image, 0, 329, 1640, 59, 0, 880, 1640, 59);
   }
 
+  drawTimebar(
+    image: HTMLImageElement,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) {
+    this.buffer.drawImage(image, 0, 388, 1315, 25, x, y, width, height);
+  }
+
   fill(color: string) {
     this.buffer.fillStyle = color;
     this.buffer.fillRect(

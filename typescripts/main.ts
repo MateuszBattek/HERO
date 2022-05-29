@@ -34,6 +34,14 @@ window.addEventListener("load", function () {
       game.world.tile_set.tile_height
     );
 
+    display.drawTimebar(
+      assets_manager.rest_map_image,
+      288,
+      661,
+      Math.round((1315 * game.world.time_limit) / 128),
+      25
+    );
+
     let helicopter_frame =
       game.world.tile_set.helicopter_frames[
         game.world.player.helicopter.frame_value

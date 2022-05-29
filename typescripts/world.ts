@@ -27,6 +27,9 @@ export class World {
   width: number;
   height: number;
 
+  time: number;
+  time_limit: number;
+
   constructor() {
     this.collider = new Collider();
     this.player_sets = {
@@ -50,6 +53,9 @@ export class World {
 
     this.height = this.tile_set.tile_height * this.rows + 369;
     this.width = this.tile_set.tile_width * this.columns;
+
+    this.time = Date.now();
+    this.time_limit = 128;
   }
 
   collideObject(object: Player): void {
@@ -165,6 +171,10 @@ export class World {
   }
 
   update() {
+    if (Date.now() - this.time >= 1000) {
+      this.time = Date.now();
+      this.time_limit--;
+    }
     this.player.updatePosition();
     this.collideObject(this.player);
 

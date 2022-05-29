@@ -22,6 +22,8 @@ var World = /** @class */ (function () {
         this.tile_set = new TileSet(10, 164, 95);
         this.height = this.tile_set.tile_height * this.rows + 369;
         this.width = this.tile_set.tile_width * this.columns;
+        this.time = Date.now();
+        this.time_limit = 128;
     }
     World.prototype.collideObject = function (object) {
         /* Let's make sure we can't leave the world boundaries. */
@@ -97,6 +99,10 @@ var World = /** @class */ (function () {
         }
     };
     World.prototype.update = function () {
+        if (Date.now() - this.time >= 1000) {
+            this.time = Date.now();
+            this.time_limit--;
+        }
         this.player.updatePosition();
         this.collideObject(this.player);
         for (var index = this.doors.length - 1; index > -1; --index) {
