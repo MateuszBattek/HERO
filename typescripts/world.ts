@@ -171,7 +171,7 @@ export class World {
   }
 
   update() {
-    if (Date.now() - this.time >= 1000) {
+    if (Date.now() - this.time >= 1000 && this.time_limit >= 0) {
       this.time = Date.now();
       this.time_limit--;
     }
