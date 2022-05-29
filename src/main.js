@@ -13,12 +13,11 @@ window.addEventListener("load", function () {
         display.render();
     };
     var render = function () {
-        display.drawMap(assets_manager.tile_set_image, game.world.tile_set.columns, game.world.graphical_map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        display.drawMap(assets_manager.tile_set_image, assets_manager.rest_map_image, game.world.top_coords, game.world.tile_set.columns, game.world.graphical_map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
         var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
-        display.drawObject(assets_manager.tile_set_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
+        display.drawObject(assets_manager.hero_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
         var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];
-        display.drawObject(assets_manager.tile_set_image, player_frame.x, player_frame.y, game.world.player.x, game.world.player.y, player_frame.width, player_frame.height, 69, 97);
-        //display.drawPlayer(game.world.player, "#555555", "#ffffff");
+        display.drawObject(assets_manager.hero_image, player_frame.x, player_frame.y, game.world.player.x, game.world.player.y, player_frame.width, player_frame.height, 69, 97);
         display.render();
     };
     var update = function () {
@@ -41,7 +40,8 @@ window.addEventListener("load", function () {
         if (game.world.door) {
             engine.stop();
             assets_manager.requestJSON("../levels.json", function (file) {
-                game.world.setup(file.levels[0].zones[0]);
+                console.log(game.world.door.destination_zone);
+                game.world.setup(file.levels[0].zones[+game.world.door.destination_zone]);
                 engine.start();
             });
         }
@@ -66,7 +66,7 @@ window.addEventListener("load", function () {
     // display.tile_sheet.image.src = "images/map.png";
     assets_manager.requestJSON("../levels.json", function (file) {
         game.world.setup(file.levels[0].zones[0]);
-        assets_manager.loadTileSetImage("images/map.png", function () {
+        assets_manager.loadTileSetImage("images/map.png", "images/restmap.png", "images/hero.png", function () {
             resize();
             engine.start();
         });

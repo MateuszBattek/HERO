@@ -220,6 +220,18 @@ var Collider = /** @class */ (function () {
                 if (this.collidePlatformLeft(object, tile_x + tile_width / 2))
                     return;
                 break;
+            case 24:
+                if (this.collideRightPlatformBottom(object, tile_y + tile_height, tile_x, tile_width / 2))
+                    return;
+                if (this.collidePlatformRight(object, tile_x + tile_width / 2))
+                    return;
+                break;
+            case 25:
+                if (this.collideLeftPlatformBottom(object, tile_y + tile_height, tile_x + tile_width / 2, tile_width / 2))
+                    return;
+                if (this.collidePlatformLeft(object, tile_x + tile_width / 2))
+                    return;
+                break;
         }
     };
     return Collider;

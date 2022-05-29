@@ -25,6 +25,8 @@ window.addEventListener("load", function () {
   let render = function (): void {
     display.drawMap(
       assets_manager.tile_set_image,
+      assets_manager.rest_map_image,
+      game.world.top_coords,
       game.world.tile_set.columns,
       game.world.graphical_map,
       game.world.columns,
@@ -38,7 +40,7 @@ window.addEventListener("load", function () {
       ];
 
     display.drawObject(
-      assets_manager.tile_set_image,
+      assets_manager.hero_image,
       helicopter_frame.x,
       helicopter_frame.y,
       game.world.player.helicopter.x,
@@ -53,7 +55,7 @@ window.addEventListener("load", function () {
       game.world.tile_set.player_frames[game.world.player.frame_value];
 
     display.drawObject(
-      assets_manager.tile_set_image,
+      assets_manager.hero_image,
       player_frame.x,
       player_frame.y,
       game.world.player.x,
@@ -64,7 +66,6 @@ window.addEventListener("load", function () {
       97
     );
 
-    //display.drawPlayer(game.world.player, "#555555", "#ffffff");
     display.render();
   };
 
@@ -85,7 +86,10 @@ window.addEventListener("load", function () {
     if (game.world.door) {
       engine.stop();
       assets_manager.requestJSON("../levels.json", (file: File) => {
-        game.world.setup(file.levels[0].zones[0]);
+        console.log(game.world.door!.destination_zone);
+        game.world.setup(
+          file.levels[0].zones[+game.world.door!.destination_zone]
+        );
 
         engine.start();
       });
@@ -119,10 +123,15 @@ window.addEventListener("load", function () {
   assets_manager.requestJSON("../levels.json", (file: File) => {
     game.world.setup(file.levels[0].zones[0]);
 
-    assets_manager.loadTileSetImage("images/map.png", () => {
-      resize();
-      engine.start();
-    });
+    assets_manager.loadTileSetImage(
+      "images/map.png",
+      "images/restmap.png",
+      "images/hero.png",
+      () => {
+        resize();
+        engine.start();
+      }
+    );
   });
 
   window.addEventListener("keydown", keyDownUp);

@@ -15,13 +15,14 @@ export class World {
   rows: number;
 
   level: string;
-  zone_id: string;
+  zone_id: number;
   doors: Door[];
   door: Door | undefined;
 
   tile_set: TileSet;
 
   graphical_map!: number[];
+  top_coords!: number;
   collision_map!: number[];
   width: number;
   height: number;
@@ -40,25 +41,12 @@ export class World {
     this.rows = 6;
 
     this.level = "1";
-    this.zone_id = "0";
+    this.zone_id = 0;
 
     this.doors = [];
     this.door = undefined;
 
     this.tile_set = new TileSet(10, 164, 95);
-
-    // this.graphical_map = [
-    //   0, 1, 2, 3, 4, 3, 4, 3, 4, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-    //   17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-    //   35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 45, 46, 47, 48, 45, 46,
-    //   45, 46,
-    // ];
-
-    // this.collision_map = [
-    //   0, 16, 17, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 4, 4, 4, 4, 4, 4, 0, 2, 0, 0,
-    //   0, 0, 0, 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 1, 1, 1, 20, 21, 1,
-    //   1, 1, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0,
-    // ];
 
     this.height = this.tile_set.tile_height * this.rows + 369;
     this.width = this.tile_set.tile_width * this.columns;
@@ -73,9 +61,11 @@ export class World {
     //   object.setRight(this.width);
     //   object.velocity_x = 0;
     // }
-    if (object.getTop() < 19) {
-      object.setTop(19);
-      object.velocity_y = 0;
+    if (this.zone_id == 0) {
+      if (object.getTop() < 19) {
+        object.setTop(19);
+        object.velocity_y = 0;
+      }
     }
     // else if (
     //   object.getBottom() >
@@ -140,6 +130,7 @@ export class World {
   setup(zone: Zone) {
     //Get the new tile maps, the new zone, and reset the doors array.
     this.graphical_map = zone.graphical_map;
+    this.top_coords = zone.top_coords;
     this.collision_map = zone.collision_map;
     this.columns = zone.columns;
     this.rows = zone.rows;

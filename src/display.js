@@ -22,9 +22,9 @@ var Display = /** @class */ (function () {
     Display.prototype.drawObject = function (image, source_x, source_y, destination_x, destination_y, source_width, source_height, width, height) {
         this.buffer.drawImage(image, source_x, source_y, source_width, source_height, Math.round(destination_x), Math.round(destination_y), width, height);
     };
-    Display.prototype.drawMap = function (image, image_columns, map, map_columns, tile_width, tile_height) {
+    Display.prototype.drawMap = function (image, rest_image, top_coords, image_columns, map, map_columns, tile_width, tile_height) {
         //top
-        this.buffer.drawImage(image, 0, 475, 1640, 19, 0, 0, 1640, 19);
+        this.buffer.drawImage(rest_image, 0, top_coords, 1640, 19, 0, 0, 1640, 19);
         //map
         for (var index = 0; index <= map.length - 1; index++) {
             var value = map[index];
@@ -35,11 +35,11 @@ var Display = /** @class */ (function () {
             this.buffer.drawImage(image, source_x, source_y, tile_width, tile_height, destination_x, destination_y + 19, tile_width, tile_height);
         }
         //bottom
-        this.buffer.drawImage(image, 0, 494, 1640, 31, 0, 589, 1640, 31);
+        this.buffer.drawImage(rest_image, 0, 38, 1640, 31, 0, 589, 1640, 31);
         //info_box
-        this.buffer.drawImage(image, 0, 525, 1640, 260, 0, 620, 1640, 260);
+        this.buffer.drawImage(rest_image, 0, 69, 1640, 260, 0, 620, 1640, 260);
         //footer
-        this.buffer.drawImage(image, 0, 785, 1640, 59, 0, 880, 1640, 59);
+        this.buffer.drawImage(rest_image, 0, 329, 1640, 59, 0, 880, 1640, 59);
     };
     Display.prototype.fill = function (color) {
         this.buffer.fillStyle = color;

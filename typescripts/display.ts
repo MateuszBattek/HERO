@@ -50,6 +50,8 @@ export class Display {
 
   drawMap(
     image: HTMLImageElement,
+    rest_image: HTMLImageElement,
+    top_coords: number,
     image_columns: number,
     map: number[],
     map_columns: number,
@@ -57,7 +59,7 @@ export class Display {
     tile_height: number
   ) {
     //top
-    this.buffer.drawImage(image, 0, 475, 1640, 19, 0, 0, 1640, 19);
+    this.buffer.drawImage(rest_image, 0, top_coords, 1640, 19, 0, 0, 1640, 19);
 
     //map
     for (let index = 0; index <= map.length - 1; index++) {
@@ -80,13 +82,13 @@ export class Display {
     }
 
     //bottom
-    this.buffer.drawImage(image, 0, 494, 1640, 31, 0, 589, 1640, 31);
+    this.buffer.drawImage(rest_image, 0, 38, 1640, 31, 0, 589, 1640, 31);
 
     //info_box
-    this.buffer.drawImage(image, 0, 525, 1640, 260, 0, 620, 1640, 260);
+    this.buffer.drawImage(rest_image, 0, 69, 1640, 260, 0, 620, 1640, 260);
 
     //footer
-    this.buffer.drawImage(image, 0, 785, 1640, 59, 0, 880, 1640, 59);
+    this.buffer.drawImage(rest_image, 0, 329, 1640, 59, 0, 880, 1640, 59);
   }
 
   fill(color: string) {

@@ -8,7 +8,9 @@ export interface Zone {
 
   graphical_map: number[];
 
+  top_coords: number;
+
   collision_map: number[];
 
-  id: string;
+  id: number;
 }
