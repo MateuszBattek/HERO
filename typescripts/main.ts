@@ -74,30 +74,52 @@ window.addEventListener("load", function () {
       97
     );
 
+    //lives
+    for (let i = 0; i < game.world.lives - 1; i++) {
+      display.drawObject(
+        assets_manager.rest_map_image,
+        0,
+        413,
+        190 + i * 100,
+        696,
+        60,
+        68,
+        60,
+        68
+      );
+    }
+
     display.render();
   };
 
   let update = function (): void {
-    if (controller.left.active || controller.right.active) {
-      if (controller.left.active) game.world.player.moveLeft();
-      else game.world.player.moveRight();
-    } else {
-      game.world.player.stop();
-    }
-    if (controller.up.active) {
-      game.world.player.fly();
-      //controller.up.active = false;
-    } else {
-      game.world.player.fall();
+    if (game.world.player.alive) {
+      if (controller.left.active || controller.right.active) {
+        if (controller.left.active) game.world.player.moveLeft();
+        else game.world.player.moveRight();
+      } else {
+        game.world.player.stop();
+      }
+      if (controller.up.active) {
+        game.world.player.fly();
+        //controller.up.active = false;
+      } else {
+        game.world.player.fall();
+      }
     }
 
-    if (game.world.door) {
+    if (game.world.door || game.world.reset) {
+      game.world.reset = false;
       engine.stop();
       assets_manager.requestJSON("../levels.json", (file: File) => {
         console.log(game.world.door!.destination_zone);
-        game.world.setup(
-          file.levels[0].zones[+game.world.door!.destination_zone]
-        );
+        if (game.world.door) {
+          game.world.setup(
+            file.levels[0].zones[+game.world.door!.destination_zone]
+          );
+        } else {
+          game.world.setup(file.levels[0].zones[game.world.zone_id]);
+        }
 
         engine.start();
       });

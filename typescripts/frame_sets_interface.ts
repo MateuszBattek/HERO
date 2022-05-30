@@ -5,4 +5,5 @@ export interface Player_Sets {
   "fly-left": number[];
   "walk-left": number[];
   "idle-left": number[];
+  dead: number[];
 }

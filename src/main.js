@@ -19,30 +19,42 @@ window.addEventListener("load", function () {
         display.drawObject(assets_manager.hero_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
         var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];
         display.drawObject(assets_manager.hero_image, player_frame.x, player_frame.y, game.world.player.x, game.world.player.y, player_frame.width, player_frame.height, 69, 97);
+        //lives
+        for (var i = 0; i < game.world.lives - 1; i++) {
+            display.drawObject(assets_manager.rest_map_image, 0, 413, 190 + i * 100, 696, 60, 68, 60, 68);
+        }
         display.render();
     };
     var update = function () {
-        if (controller.left.active || controller.right.active) {
-            if (controller.left.active)
-                game.world.player.moveLeft();
-            else
-                game.world.player.moveRight();
+        if (game.world.player.alive) {
+            if (controller.left.active || controller.right.active) {
+                if (controller.left.active)
+                    game.world.player.moveLeft();
+                else
+                    game.world.player.moveRight();
+            }
+            else {
+                game.world.player.stop();
+            }
+            if (controller.up.active) {
+                game.world.player.fly();
+                //controller.up.active = false;
+            }
+            else {
+                game.world.player.fall();
+            }
         }
-        else {
-            game.world.player.stop();
-        }
-        if (controller.up.active) {
-            game.world.player.fly();
-            //controller.up.active = false;
-        }
-        else {
-            game.world.player.fall();
-        }
-        if (game.world.door) {
+        if (game.world.door || game.world.reset) {
+            game.world.reset = false;
             engine.stop();
             assets_manager.requestJSON("../levels.json", function (file) {
                 console.log(game.world.door.destination_zone);
-                game.world.setup(file.levels[0].zones[+game.world.door.destination_zone]);
+                if (game.world.door) {
+                    game.world.setup(file.levels[0].zones[+game.world.door.destination_zone]);
+                }
+                else {
+                    game.world.setup(file.levels[0].zones[game.world.zone_id]);
+                }
                 engine.start();
             });
         }

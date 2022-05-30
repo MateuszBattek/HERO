@@ -35,6 +35,7 @@ var Player = /** @class */ (function (_super) {
         _this.direction_x = 1;
         _this.player_sets = player_sets;
         _this.helicopter = new Helicopter(x, y, 32 * 1.5, 9 * 1.5);
+        _this.alive = true;
         return _this;
     }
     Player.prototype.fly = function () {
@@ -75,8 +76,23 @@ var Player = /** @class */ (function (_super) {
         this.direction_x = 1;
         this.velocity_x = 10;
     };
+    Player.prototype.die = function () {
+        this.alive = false;
+        this.velocity_x = 0;
+        this.velocity_y = 0;
+    };
+    Player.prototype.revive = function () {
+        this.alive = true;
+        this.y = 0;
+        this.flying = true;
+        this.falling_loader = 0;
+    };
     Player.prototype.updateAnimation = function () {
-        if (this.flying) {
+        if (!this.alive) {
+            this.changeFrameSet(this.player_sets["dead"], "pause");
+            this.helicopter.changeFrameSet([0], "pause");
+        }
+        else if (this.flying) {
             if (this.direction_x < 0)
                 this.changeFrameSet(this.player_sets["fly-left"], "pause");
             else
@@ -97,7 +113,6 @@ var Player = /** @class */ (function (_super) {
         this.animate();
         this.updateHelicopterPosition();
         this.helicopter.updateAnimation();
-        this.helicopter.animate();
     };
     Player.prototype.updatePosition = function () {
         this.x_old = this.x;
@@ -106,7 +121,10 @@ var Player = /** @class */ (function (_super) {
         this.y += this.velocity_y;
     };
     Player.prototype.updateHelicopterPosition = function () {
-        this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+        if (this.alive)
+            this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+        else
+            this.helicopter.x = this.x + 30;
         this.helicopter.y = this.y - 12;
     };
     Player.prototype.getBottom = function () {

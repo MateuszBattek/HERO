@@ -17,7 +17,7 @@ import { Animator } from "./animator";
 var Helicopter = /** @class */ (function (_super) {
     __extends(Helicopter, _super);
     function Helicopter(x, y, width, height) {
-        var _this = _super.call(this, [0, 1, 2, 1], 1) || this;
+        var _this = _super.call(this, [0], 1) || this;
         _this.x = x;
         _this.y = y;
         _this.width = width;
@@ -29,7 +29,7 @@ var Helicopter = /** @class */ (function (_super) {
     }
     Helicopter.prototype.updateAnimation = function () {
         this.changeFrameSet(this.set, "loop", this.animation_delay);
-        //this.animate();
+        this.animate();
     };
     return Helicopter;
 }(Animator));

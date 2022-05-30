@@ -20,6 +20,7 @@ export class Player extends Animator {
   direction_x: number;
   player_sets: Player_Sets;
   helicopter: Helicopter;
+  alive: boolean;
 
   constructor(x: number, y: number, player_sets: Player_Sets) {
     super(player_sets["fly-left"], 10);
@@ -39,6 +40,7 @@ export class Player extends Animator {
     this.direction_x = 1;
     this.player_sets = player_sets;
     this.helicopter = new Helicopter(x, y, 32 * 1.5, 9 * 1.5);
+    this.alive = true;
   }
 
   fly() {
@@ -81,8 +83,24 @@ export class Player extends Animator {
     this.velocity_x = 10;
   }
 
+  die() {
+    this.alive = false;
+    this.velocity_x = 0;
+    this.velocity_y = 0;
+  }
+
+  revive() {
+    this.alive = true;
+    this.y = 0;
+    this.flying = true;
+    this.falling_loader = 0;
+  }
+
   updateAnimation() {
-    if (this.flying) {
+    if (!this.alive) {
+      this.changeFrameSet(this.player_sets["dead"], "pause");
+      this.helicopter.changeFrameSet([0], "pause");
+    } else if (this.flying) {
       if (this.direction_x < 0)
         this.changeFrameSet(this.player_sets["fly-left"], "pause");
       else this.changeFrameSet(this.player_sets["fly-right"], "pause");
@@ -99,7 +117,6 @@ export class Player extends Animator {
     this.animate();
     this.updateHelicopterPosition();
     this.helicopter.updateAnimation();
-    this.helicopter.animate();
   }
 
   updatePosition() {
@@ -110,7 +127,9 @@ export class Player extends Animator {
   }
 
   updateHelicopterPosition() {
-    this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+    if (this.alive)
+      this.helicopter.x = this.direction_x == 1 ? this.x - 9 : this.x + 30;
+    else this.helicopter.x = this.x + 30;
     this.helicopter.y = this.y - 12;
   }
 

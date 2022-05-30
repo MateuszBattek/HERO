@@ -14,7 +14,7 @@ export class World {
   columns: number;
   rows: number;
 
-  level: string;
+  level: number;
   zone_id: number;
   doors: Door[];
   door: Door | undefined;
@@ -30,6 +30,10 @@ export class World {
   time: number;
   time_limit: number;
 
+  lives: number;
+
+  reset: boolean;
+
   constructor() {
     this.collider = new Collider();
     this.player_sets = {
@@ -39,11 +43,12 @@ export class World {
       "fly-left": [7],
       "walk-left": [8, 9, 10, 11, 12],
       "idle-left": [13],
+      dead: [14],
     };
     (this.player = new Player(300, 19, this.player_sets)), (this.columns = 10);
     this.rows = 6;
 
-    this.level = "1";
+    this.level = 1;
     this.zone_id = 0;
 
     this.doors = [];
@@ -55,7 +60,11 @@ export class World {
     this.width = this.tile_set.tile_width * this.columns;
 
     this.time = Date.now();
-    this.time_limit = 128;
+    this.time_limit = 10;
+
+    this.lives = 4;
+
+    this.reset = false;
   }
 
   collideObject(object: Player): void {
@@ -170,11 +179,41 @@ export class World {
     }
   }
 
-  update() {
-    if (Date.now() - this.time >= 1000 && this.time_limit >= 0) {
+  checkTimeLimit() {
+    if (Date.now() - this.time >= 1000 && this.time_limit > 0) {
       this.time = Date.now();
       this.time_limit--;
+      if (this.time_limit == 0) {
+        this.player.die();
+        this.lives--;
+      }
     }
+  }
+
+  reviveCooldown() {
+    if (Date.now() - this.time >= 5000) {
+      if (this.lives == 0) {
+        this.level = 1;
+        this.zone_id = 0;
+        this.doors = [];
+        this.door = undefined;
+        this.lives = 4;
+        this.time = Date.now();
+
+        this.player.x = 300;
+        this.player.y = 19;
+
+        this.reset = true;
+      }
+      this.time_limit = 10;
+      this.player.revive();
+    }
+  }
+
+  update() {
+    this.checkTimeLimit();
+    this.reviveCooldown();
+
     this.player.updatePosition();
     this.collideObject(this.player);
 

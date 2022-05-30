@@ -1,4 +1,5 @@
 import { Animator } from "./animator";
+import { Player } from "./player";
 
 export class Helicopter extends Animator {
   x: number;
@@ -12,7 +13,7 @@ export class Helicopter extends Animator {
   set: number[];
 
   constructor(x: number, y: number, width: number, height: number) {
-    super([0, 1, 2, 1], 1);
+    super([0], 1);
     this.x = x;
     this.y = y;
     this.width = width;
@@ -25,6 +26,7 @@ export class Helicopter extends Animator {
 
   updateAnimation() {
     this.changeFrameSet(this.set, "loop", this.animation_delay);
-    //this.animate();
+
+    this.animate();
   }
 }

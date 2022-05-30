@@ -19,7 +19,8 @@ var TileSet = /** @class */ (function () {
             new Frame(584, 0, 46, 65, 0, -10),
             new Frame(642, 0, 46, 65, 0, -10),
             new Frame(700, 0, 46, 65, 0, -10),
-            new Frame(758, 0, 46, 65, 0, -10), //idle-left
+            new Frame(758, 0, 46, 65, 0, -10),
+            new Frame(804, 0, 58, 66, 0, -10),
         ];
         this.helicopter_frames = [
             new Frame(0, 66, 32, 9, 0, 0),
