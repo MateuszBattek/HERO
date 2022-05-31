@@ -22,6 +22,8 @@ var Wall = /** @class */ (function (_super) {
         return _this;
     }
     Wall.prototype.collideObject = function (object) {
+        if (!this.active)
+            return false;
         if (object.getRight() > this.getLeft() &&
             object.getOldRight() <= this.getLeft()) {
             object.setRight(this.getLeft() - 0.01);

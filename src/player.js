@@ -60,7 +60,7 @@ var Player = /** @class */ (function (_super) {
             this.velocity_y = 0;
         }
         else {
-            this.flying = true;
+            // this.flying = true;
             this.velocity_y = 10;
             this.helicopter.delay = 5;
         }
@@ -75,6 +75,9 @@ var Player = /** @class */ (function (_super) {
     Player.prototype.moveRight = function () {
         this.direction_x = 1;
         this.velocity_x = 10;
+    };
+    Player.prototype.placeBomb = function () {
+        console.log("BOMBA, UCEIKAC");
     };
     Player.prototype.die = function () {
         this.alive = false;

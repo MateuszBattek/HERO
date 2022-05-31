@@ -1,4 +1,5 @@
 import { Animator } from "./animator";
+import { Bomb } from "./bomb";
 import { Frame } from "./frame";
 import { Player_Sets } from "./frame_sets_interface";
 import { Helicopter } from "./helicopter";
@@ -63,7 +64,7 @@ export class Player extends Animator {
       this.falling_loader += 0.08;
       this.velocity_y = 0;
     } else {
-      this.flying = true;
+      // this.flying = true;
       this.velocity_y = 10;
       this.helicopter.delay = 5;
     }
@@ -81,6 +82,10 @@ export class Player extends Animator {
   moveRight() {
     this.direction_x = 1;
     this.velocity_x = 10;
+  }
+
+  placeBomb() {
+    console.log("BOMBA, UCEIKAC");
   }
 
   die() {

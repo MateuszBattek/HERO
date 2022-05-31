@@ -10,6 +10,7 @@ export class Wall extends Object {
   }
 
   collideObject(object: Player) {
+    if (!this.active) return false;
     if (
       object.getRight() > this.getLeft() &&
       object.getOldRight() <= this.getLeft()

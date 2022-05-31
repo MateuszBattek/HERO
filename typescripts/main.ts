@@ -5,6 +5,7 @@ import { Game } from "./game";
 import { AssetsManager } from "./assetsManager";
 import { Level } from "./level_interface";
 import { File } from "./file_interface";
+import { World } from "./world";
 
 window.addEventListener("load", function () {
   "use strict";
@@ -23,6 +24,8 @@ window.addEventListener("load", function () {
   };
 
   let render = function (): void {
+    display.fill(game.world.background);
+
     display.drawMap(
       assets_manager.tile_set_image,
       assets_manager.rest_map_image,
@@ -41,6 +44,23 @@ window.addEventListener("load", function () {
       Math.round((1315 * game.world.time_limit) / 128),
       25
     );
+
+    if (game.world.bomb) {
+      let bomb_frame =
+        game.world.tile_set.bomb_frames[game.world.bomb.frame_value];
+
+      display.drawObject(
+        assets_manager.rest_map_image,
+        bomb_frame.x,
+        bomb_frame.y,
+        game.world.bomb.x,
+        game.world.bomb.y,
+        bomb_frame.width,
+        bomb_frame.height,
+        bomb_frame.width,
+        bomb_frame.height
+      );
+    }
 
     let helicopter_frame =
       game.world.tile_set.helicopter_frames[
@@ -89,18 +109,36 @@ window.addEventListener("load", function () {
       );
     }
 
-    for (let i = 0; i < game.world.walls.length; i++) {
+    //bombs
+    for (let i = 0; i < game.world.bombs; i++) {
       display.drawObject(
         assets_manager.rest_map_image,
-        60,
+        142,
         413,
-        game.world.walls[i].x,
-        game.world.walls[i].y,
-        game.world.walls[i].width,
-        game.world.walls[i].height,
-        game.world.walls[i].width,
-        game.world.walls[i].height
+        1031 + i * 100,
+        696,
+        42,
+        62,
+        42,
+        62
       );
+    }
+
+    //walls
+    for (let i = 0; i < game.world.walls.length; i++) {
+      if (game.world.walls[i].active) {
+        display.drawObject(
+          assets_manager.rest_map_image,
+          60,
+          413,
+          game.world.walls[i].x,
+          game.world.walls[i].y,
+          game.world.walls[i].width,
+          game.world.walls[i].height,
+          game.world.walls[i].width,
+          game.world.walls[i].height
+        );
+      }
     }
 
     display.render();
@@ -119,6 +157,10 @@ window.addEventListener("load", function () {
         //controller.up.active = false;
       } else {
         game.world.player.fall();
+      }
+      if (controller.down.active) {
+        game.world.placeBomb();
+        controller.down.active = false;
       }
     }
 

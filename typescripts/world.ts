@@ -1,3 +1,4 @@
+import { Bomb } from "./bomb";
 import { Collider } from "./collider";
 import { Door } from "./door";
 import { Player_Sets } from "./frame_sets_interface";
@@ -8,6 +9,8 @@ import { Zone } from "./zone_interface";
 
 export class World {
   collider: Collider;
+
+  background: string;
 
   player_sets: Player_Sets;
   player: Player;
@@ -21,6 +24,7 @@ export class World {
   walls: Wall[];
   doors: Door[];
   door: Door | undefined;
+  bomb: Bomb | undefined;
 
   tile_set: TileSet;
 
@@ -34,11 +38,14 @@ export class World {
   time_limit: number;
 
   lives: number;
+  bombs: number;
 
   reset: boolean;
 
   constructor() {
     this.collider = new Collider();
+
+    this.background = "#000000";
     this.player_sets = {
       "fly-right": [0],
       "walk-right": [1, 2, 3, 4, 5],
@@ -67,33 +74,19 @@ export class World {
     this.time_limit = 128;
 
     this.lives = 4;
+    this.bombs = 6;
+    this.bomb = undefined;
 
     this.reset = false;
   }
 
   collideObject(object: Player): void {
-    /* Let's make sure we can't leave the world boundaries. */
-    // if (object.getLeft() < 0) {
-    //   object.setLeft(0);
-    //   object.velocity_x = 0;
-    // } else if (object.getRight() > this.width) {
-    //   object.setRight(this.width);
-    //   object.velocity_x = 0;
-    // }
     if (this.zone_id == 0) {
       if (object.getTop() < 19) {
         object.setTop(19);
         object.velocity_y = 0;
       }
     }
-    // else if (
-    //   object.getBottom() >
-    //   this.tile_set.tile_height * this.rows + 19
-    // ) {
-    //   object.setBottom(this.tile_set.tile_height * this.rows + 19);
-    //   object.velocity_y = 0;
-    //   object.flying = false;
-    // }
 
     let bottom, left, right, top, value: number;
 
@@ -189,8 +182,19 @@ export class World {
     }
   }
 
+  placeBomb() {
+    if (!this.player.flying && !this.bomb && this.bombs > 0) {
+      this.bomb = new Bomb(this.player.getCenterX(), this.player.getBottom());
+      this.bombs--;
+    }
+  }
+
   checkTimeLimit() {
-    if (Date.now() - this.time >= 1000 && this.time_limit > 0) {
+    if (
+      Date.now() - this.time >= 1000 &&
+      this.time_limit > 0 &&
+      this.player.alive
+    ) {
       this.time = Date.now();
       this.time_limit--;
       if (this.time_limit == 0) {
@@ -201,7 +205,7 @@ export class World {
   }
 
   reviveCooldown() {
-    if (Date.now() - this.time >= 5000) {
+    if (Date.now() - this.time >= 3000) {
       if (this.lives == 0) {
         this.level = 1;
         this.zone_id = 0;
@@ -209,15 +213,64 @@ export class World {
         this.doors = [];
         this.door = undefined;
         this.lives = 4;
+        this.bombs = 6;
         this.time = Date.now();
 
         this.player.x = 300;
         this.player.y = 19;
 
         this.reset = true;
+        this.time_limit = 128;
       }
-      this.time_limit = 128;
+
       this.player.revive();
+    }
+  }
+
+  bombExplode() {
+    if (!this.player.flying) {
+      if (
+        Math.abs(this.bomb!.x - this.player.x) <= 100 &&
+        Math.abs(this.bomb!.y - this.player.y) <= 100
+      ) {
+        this.player.die();
+        this.lives--;
+      }
+    }
+    for (let i = 0; i < this.walls.length; i++) {
+      let wall = this.walls[i];
+      if (
+        Math.abs(this.bomb!.x - wall.x) <= 100 &&
+        Math.abs(this.bomb!.y - wall.y) <= 200
+      ) {
+        console.log("broke");
+        wall.active = false;
+      }
+    }
+  }
+
+  bombAnimate() {
+    if (this.bomb) {
+      this.bomb.animate();
+      let time_since_placed = Date.now() - this.bomb.time;
+
+      if (time_since_placed >= 700) {
+        this.bomb.changeFrameSet([3], "pause");
+        if (time_since_placed >= 740) {
+          this.bomb.changeFrameSet([4], "pause");
+          if (time_since_placed >= 760) {
+            this.background = "#6f4f24";
+            if (time_since_placed >= 780) {
+              this.background = "#67362b";
+              if (time_since_placed >= 800) {
+                this.background = "#000000";
+                this.bombExplode();
+                this.bomb = undefined;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -244,5 +297,7 @@ export class World {
     }
 
     this.player.updateAnimation();
+
+    this.bombAnimate();
   }
 }

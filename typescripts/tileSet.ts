@@ -7,6 +7,7 @@ export class TileSet {
 
   player_frames: Frame[];
   helicopter_frames: Frame[];
+  bomb_frames: Frame[];
 
   constructor(columns: number, tile_width: number, tile_height: number) {
     this.columns = columns;
@@ -36,6 +37,14 @@ export class TileSet {
       new Frame(0, 66, 32, 9, 0, 0),
       new Frame(32, 66, 32, 9, 0, 0),
       new Frame(64, 66, 32, 9, 0, 0),
+    ];
+
+    this.bomb_frames = [
+      new Frame(184, 413, 30, 50, 0, 0),
+      new Frame(214, 413, 30, 50, 0, 0),
+      new Frame(244, 413, 30, 50, 0, 0),
+      new Frame(274, 413, 41, 50, 0, 0),
+      new Frame(314, 413, 77, 50, 0, 0),
     ];
   }
 }

@@ -1,3 +1,4 @@
+import { Bomb } from "./bomb";
 import { Collider } from "./collider";
 import { Door } from "./door";
 import { Player } from "./player";
@@ -6,6 +7,7 @@ import { Wall } from "./wall";
 var World = /** @class */ (function () {
     function World() {
         this.collider = new Collider();
+        this.background = "#000000";
         this.player_sets = {
             "fly-right": [0],
             "walk-right": [1, 2, 3, 4, 5],
@@ -28,31 +30,17 @@ var World = /** @class */ (function () {
         this.time = Date.now();
         this.time_limit = 128;
         this.lives = 4;
+        this.bombs = 6;
+        this.bomb = undefined;
         this.reset = false;
     }
     World.prototype.collideObject = function (object) {
-        /* Let's make sure we can't leave the world boundaries. */
-        // if (object.getLeft() < 0) {
-        //   object.setLeft(0);
-        //   object.velocity_x = 0;
-        // } else if (object.getRight() > this.width) {
-        //   object.setRight(this.width);
-        //   object.velocity_x = 0;
-        // }
         if (this.zone_id == 0) {
             if (object.getTop() < 19) {
                 object.setTop(19);
                 object.velocity_y = 0;
             }
         }
-        // else if (
-        //   object.getBottom() >
-        //   this.tile_set.tile_height * this.rows + 19
-        // ) {
-        //   object.setBottom(this.tile_set.tile_height * this.rows + 19);
-        //   object.velocity_y = 0;
-        //   object.flying = false;
-        // }
         var bottom, left, right, top, value;
         top = Math.floor((object.getTop() - 19) / this.tile_set.tile_height);
         left = Math.floor(object.getLeft() / this.tile_set.tile_width);
@@ -108,8 +96,16 @@ var World = /** @class */ (function () {
             this.door = undefined; // Make sure to reset this.door so we don't trigger a zone load.
         }
     };
+    World.prototype.placeBomb = function () {
+        if (!this.player.flying && !this.bomb && this.bombs > 0) {
+            this.bomb = new Bomb(this.player.getCenterX(), this.player.getBottom());
+            this.bombs--;
+        }
+    };
     World.prototype.checkTimeLimit = function () {
-        if (Date.now() - this.time >= 1000 && this.time_limit > 0) {
+        if (Date.now() - this.time >= 1000 &&
+            this.time_limit > 0 &&
+            this.player.alive) {
             this.time = Date.now();
             this.time_limit--;
             if (this.time_limit == 0) {
@@ -119,7 +115,7 @@ var World = /** @class */ (function () {
         }
     };
     World.prototype.reviveCooldown = function () {
-        if (Date.now() - this.time >= 5000) {
+        if (Date.now() - this.time >= 3000) {
             if (this.lives == 0) {
                 this.level = 1;
                 this.zone_id = 0;
@@ -127,13 +123,54 @@ var World = /** @class */ (function () {
                 this.doors = [];
                 this.door = undefined;
                 this.lives = 4;
+                this.bombs = 6;
                 this.time = Date.now();
                 this.player.x = 300;
                 this.player.y = 19;
                 this.reset = true;
+                this.time_limit = 128;
             }
-            this.time_limit = 128;
             this.player.revive();
+        }
+    };
+    World.prototype.bombExplode = function () {
+        if (!this.player.flying) {
+            if (Math.abs(this.bomb.x - this.player.x) <= 100 &&
+                Math.abs(this.bomb.y - this.player.y) <= 100) {
+                this.player.die();
+                this.lives--;
+            }
+        }
+        for (var i = 0; i < this.walls.length; i++) {
+            var wall = this.walls[i];
+            if (Math.abs(this.bomb.x - wall.x) <= 100 &&
+                Math.abs(this.bomb.y - wall.y) <= 200) {
+                console.log("broke");
+                wall.active = false;
+            }
+        }
+    };
+    World.prototype.bombAnimate = function () {
+        if (this.bomb) {
+            this.bomb.animate();
+            var time_since_placed = Date.now() - this.bomb.time;
+            if (time_since_placed >= 700) {
+                this.bomb.changeFrameSet([3], "pause");
+                if (time_since_placed >= 740) {
+                    this.bomb.changeFrameSet([4], "pause");
+                    if (time_since_placed >= 760) {
+                        this.background = "#6f4f24";
+                        if (time_since_placed >= 780) {
+                            this.background = "#67362b";
+                            if (time_since_placed >= 800) {
+                                this.background = "#000000";
+                                this.bombExplode();
+                                this.bomb = undefined;
+                            }
+                        }
+                    }
+                }
+            }
         }
     };
     World.prototype.update = function () {
@@ -153,6 +190,7 @@ var World = /** @class */ (function () {
             }
         }
         this.player.updateAnimation();
+        this.bombAnimate();
     };
     return World;
 }());
