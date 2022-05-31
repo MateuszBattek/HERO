@@ -1,7 +1,10 @@
 import { Door } from "./door";
+import { Wall } from "./wall";
 
 export interface Zone {
   doors: Door[];
+
+  walls: Wall[];
 
   columns: number;
   rows: number;

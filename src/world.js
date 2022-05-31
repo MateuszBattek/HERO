@@ -2,6 +2,7 @@ import { Collider } from "./collider";
 import { Door } from "./door";
 import { Player } from "./player";
 import { TileSet } from "./tileSet";
+import { Wall } from "./wall";
 var World = /** @class */ (function () {
     function World() {
         this.collider = new Collider();
@@ -18,13 +19,14 @@ var World = /** @class */ (function () {
         this.rows = 6;
         this.level = 1;
         this.zone_id = 0;
+        this.walls = [];
         this.doors = [];
         this.door = undefined;
         this.tile_set = new TileSet(10, 164, 95);
         this.height = this.tile_set.tile_height * this.rows + 369;
         this.width = this.tile_set.tile_width * this.columns;
         this.time = Date.now();
-        this.time_limit = 10;
+        this.time_limit = 128;
         this.lives = 4;
         this.reset = false;
     }
@@ -76,12 +78,17 @@ var World = /** @class */ (function () {
         this.collision_map = zone.collision_map;
         this.columns = zone.columns;
         this.rows = zone.rows;
+        this.walls = new Array();
         this.doors = new Array();
         this.zone_id = zone.id;
         //Generate new doors.
         for (var index = zone.doors.length - 1; index > -1; --index) {
             var door = zone.doors[index];
             this.doors[index] = new Door(door);
+        }
+        for (var index = zone.walls.length - 1; index > -1; --index) {
+            var wall = zone.walls[index];
+            this.walls[index] = new Wall(wall);
         }
         /* If the player entered into a door, this.door will reference that door.
            Here it will be used to set player's location to the door's destination. */
@@ -116,6 +123,7 @@ var World = /** @class */ (function () {
             if (this.lives == 0) {
                 this.level = 1;
                 this.zone_id = 0;
+                this.walls = [];
                 this.doors = [];
                 this.door = undefined;
                 this.lives = 4;
@@ -124,7 +132,7 @@ var World = /** @class */ (function () {
                 this.player.y = 19;
                 this.reset = true;
             }
-            this.time_limit = 10;
+            this.time_limit = 128;
             this.player.revive();
         }
     };
@@ -133,6 +141,11 @@ var World = /** @class */ (function () {
         this.reviveCooldown();
         this.player.updatePosition();
         this.collideObject(this.player);
+        for (var index = this.walls.length - 1; index > -1; --index) {
+            var wall = this.walls[index];
+            if (wall.collideObject(this.player)) {
+            }
+        }
         for (var index = this.doors.length - 1; index > -1; --index) {
             var door = this.doors[index];
             if (door.collideObject(this.player)) {

@@ -23,6 +23,9 @@ window.addEventListener("load", function () {
         for (var i = 0; i < game.world.lives - 1; i++) {
             display.drawObject(assets_manager.rest_map_image, 0, 413, 190 + i * 100, 696, 60, 68, 60, 68);
         }
+        for (var i = 0; i < game.world.walls.length; i++) {
+            display.drawObject(assets_manager.rest_map_image, 60, 413, game.world.walls[i].x, game.world.walls[i].y, game.world.walls[i].width, game.world.walls[i].height, game.world.walls[i].width, game.world.walls[i].height);
+        }
         display.render();
     };
     var update = function () {

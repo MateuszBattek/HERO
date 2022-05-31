@@ -89,6 +89,20 @@ window.addEventListener("load", function () {
       );
     }
 
+    for (let i = 0; i < game.world.walls.length; i++) {
+      display.drawObject(
+        assets_manager.rest_map_image,
+        60,
+        413,
+        game.world.walls[i].x,
+        game.world.walls[i].y,
+        game.world.walls[i].width,
+        game.world.walls[i].height,
+        game.world.walls[i].width,
+        game.world.walls[i].height
+      );
+    }
+
     display.render();
   };
 

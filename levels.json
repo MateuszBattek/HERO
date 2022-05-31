@@ -17,6 +17,15 @@
             }
           ],
 
+          "walls": [
+            {
+              "x": 615,
+              "y": 211,
+              "width": 82,
+              "height": 188
+            }
+          ],
+
           "columns": 10,
           "rows": 6,
 
@@ -49,6 +58,8 @@
               "destination_y": 550
             }
           ],
+
+          "walls": [],
 
           "columns": 10,
           "rows": 6,

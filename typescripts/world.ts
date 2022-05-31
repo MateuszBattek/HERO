@@ -3,6 +3,7 @@ import { Door } from "./door";
 import { Player_Sets } from "./frame_sets_interface";
 import { Player } from "./player";
 import { TileSet } from "./tileSet";
+import { Wall } from "./wall";
 import { Zone } from "./zone_interface";
 
 export class World {
@@ -16,6 +17,8 @@ export class World {
 
   level: number;
   zone_id: number;
+
+  walls: Wall[];
   doors: Door[];
   door: Door | undefined;
 
@@ -51,6 +54,7 @@ export class World {
     this.level = 1;
     this.zone_id = 0;
 
+    this.walls = [];
     this.doors = [];
     this.door = undefined;
 
@@ -60,7 +64,7 @@ export class World {
     this.width = this.tile_set.tile_width * this.columns;
 
     this.time = Date.now();
-    this.time_limit = 10;
+    this.time_limit = 128;
 
     this.lives = 4;
 
@@ -149,6 +153,7 @@ export class World {
     this.collision_map = zone.collision_map;
     this.columns = zone.columns;
     this.rows = zone.rows;
+    this.walls = new Array();
     this.doors = new Array();
     this.zone_id = zone.id;
 
@@ -156,6 +161,11 @@ export class World {
     for (let index = zone.doors.length - 1; index > -1; --index) {
       let door = zone.doors[index];
       this.doors[index] = new Door(door);
+    }
+
+    for (let index = zone.walls.length - 1; index > -1; --index) {
+      let wall = zone.walls[index];
+      this.walls[index] = new Wall(wall);
     }
 
     /* If the player entered into a door, this.door will reference that door.
@@ -195,6 +205,7 @@ export class World {
       if (this.lives == 0) {
         this.level = 1;
         this.zone_id = 0;
+        this.walls = [];
         this.doors = [];
         this.door = undefined;
         this.lives = 4;
@@ -205,7 +216,7 @@ export class World {
 
         this.reset = true;
       }
-      this.time_limit = 10;
+      this.time_limit = 128;
       this.player.revive();
     }
   }
@@ -216,6 +227,13 @@ export class World {
 
     this.player.updatePosition();
     this.collideObject(this.player);
+
+    for (let index = this.walls.length - 1; index > -1; --index) {
+      let wall = this.walls[index];
+
+      if (wall.collideObject(this.player)) {
+      }
+    }
 
     for (let index = this.doors.length - 1; index > -1; --index) {
       let door = this.doors[index];
