@@ -2,12 +2,14 @@ export class AssetsManager {
   tile_set_image: HTMLImageElement;
   rest_map_image: HTMLImageElement;
   hero_image: HTMLImageElement;
+  monsters_image: HTMLImageElement;
   currentZoneId: string;
 
   constructor() {
     this.tile_set_image = new Image();
     this.rest_map_image = new Image();
     this.hero_image = new Image();
+    this.monsters_image = new Image();
     this.currentZoneId = "0";
   }
 
@@ -15,11 +17,17 @@ export class AssetsManager {
     tile_url: string,
     rest_map_url: string,
     hero_url: string,
+    monsters_url: string,
     callback: Function
   ) {
     //this.tile_set_image = new Image();
 
-    let imgs = [this.tile_set_image, this.rest_map_image, this.hero_image];
+    let imgs = [
+      this.tile_set_image,
+      this.rest_map_image,
+      this.hero_image,
+      this.monsters_image,
+    ];
     let counter = 0;
 
     [].forEach.call(imgs, function (img: HTMLImageElement) {
@@ -51,6 +59,7 @@ export class AssetsManager {
     this.tile_set_image.src = tile_url;
     this.rest_map_image.src = rest_map_url;
     this.hero_image.src = hero_url;
+    this.monsters_image.src = monsters_url;
   }
 
   /* Requests a file and hands the callback function the contents of that file

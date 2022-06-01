@@ -2,6 +2,8 @@ import { Bomb } from "./bomb";
 import { Collider } from "./collider";
 import { Door } from "./door";
 import { Player_Sets } from "./frame_sets_interface";
+import { Level } from "./level_interface";
+import { Monster } from "./monster";
 import { Player } from "./player";
 import { TileSet } from "./tileSet";
 import { Wall } from "./wall";
@@ -19,16 +21,20 @@ export class World {
   rows: number;
 
   level: number;
+  zone: Zone | undefined;
+  zones: Zone[];
   zone_id: number;
 
   walls: Wall[];
   doors: Door[];
+  monsters: Monster[];
+  monster_index: number;
   door: Door | undefined;
   bomb: Bomb | undefined;
 
   tile_set: TileSet;
 
-  graphical_map!: number[];
+  source_y!: number;
   top_coords!: number;
   collision_map!: number[];
   width: number;
@@ -59,9 +65,14 @@ export class World {
     this.rows = 6;
 
     this.level = 1;
+    this.zone = undefined;
+    this.zones = [];
     this.zone_id = 0;
 
     this.walls = [];
+    this.monsters = [];
+    this.monster_index = -1;
+
     this.doors = [];
     this.door = undefined;
 
@@ -139,26 +150,39 @@ export class World {
     );
   }
 
+  setupLevel(level: Level) {
+    this.level = level.id;
+    this.zones = level.zones;
+  }
+
   setup(zone: Zone) {
     //Get the new tile maps, the new zone, and reset the doors array.
-    this.graphical_map = zone.graphical_map;
-    this.top_coords = zone.top_coords;
-    this.collision_map = zone.collision_map;
-    this.columns = zone.columns;
-    this.rows = zone.rows;
+    this.zone = this.zones[zone.id];
+    this.zone_id = zone.id;
+
+    this.source_y = this.zone.source_y;
+    this.top_coords = this.zone.top_coords;
+    this.collision_map = this.zone.collision_map;
+    this.columns = this.zone.columns;
+    this.rows = this.zone.rows;
     this.walls = new Array();
     this.doors = new Array();
-    this.zone_id = zone.id;
+    this.zone_id = this.zone.id;
 
     //Generate new doors.
     for (let index = zone.doors.length - 1; index > -1; --index) {
-      let door = zone.doors[index];
+      let door = this.zone.doors[index];
       this.doors[index] = new Door(door);
     }
 
     for (let index = zone.walls.length - 1; index > -1; --index) {
-      let wall = zone.walls[index];
-      this.walls[index] = new Wall(wall);
+      let wall = this.zone.walls[index];
+      if (wall.active) this.walls[index] = new Wall(wall);
+    }
+
+    for (let index = zone.monsters.length - 1; index > -1; --index) {
+      let monster = this.zone.monsters[index];
+      if (monster.alive) this.monsters[index] = new Monster(monster);
     }
 
     /* If the player entered into a door, this.door will reference that door.
@@ -222,6 +246,10 @@ export class World {
         this.reset = true;
         this.time_limit = 128;
       }
+      if (this.monster_index >= 0) {
+        this.monsters[this.monster_index].alive = false;
+        this.monster_index = -1;
+      }
 
       this.player.revive();
     }
@@ -230,8 +258,10 @@ export class World {
   bombExplode() {
     if (!this.player.flying) {
       if (
-        Math.abs(this.bomb!.x - this.player.x) <= 100 &&
-        Math.abs(this.bomb!.y - this.player.y) <= 100
+        Math.abs(
+          this.bomb!.x + this.bomb!.width / 2 - this.player.getCenterX()
+        ) <= 100 &&
+        Math.abs(this.bomb!.y - this.player.y) <= 200
       ) {
         this.player.die();
         this.lives--;
@@ -239,8 +269,11 @@ export class World {
     }
     for (let i = 0; i < this.walls.length; i++) {
       let wall = this.walls[i];
+      if (!wall.active) continue;
       if (
-        Math.abs(this.bomb!.x - wall.x) <= 100 &&
+        Math.abs(
+          this.bomb!.x + this.bomb!.width / 2 - wall.x + wall.width / 2
+        ) <= 100 &&
         Math.abs(this.bomb!.y - wall.y) <= 200
       ) {
         console.log("broke");
@@ -292,7 +325,29 @@ export class World {
       let door = this.doors[index];
 
       if (door.collideObject(this.player)) {
+        this.zones[this.zone_id].doors = this.doors;
+        this.zones[this.zone_id].walls = this.walls;
         this.door = door;
+      }
+    }
+
+    for (let index = this.monsters.length - 1; index > -1; --index) {
+      let monster = this.monsters[index];
+
+      monster.animate();
+      switch (monster.type) {
+        case "spider":
+          if (monster.frame_index == 0) monster.height = 52;
+          else monster.height = 56;
+          break;
+      }
+
+      if (monster.collideObject(this.player)) {
+        this.lives--;
+        this.player.die();
+        //monster.alive = false;
+        this.monster_index = index;
+        break;
       }
     }
 

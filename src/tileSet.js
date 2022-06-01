@@ -34,6 +34,10 @@ var TileSet = /** @class */ (function () {
             new Frame(274, 413, 41, 50, 0, 0),
             new Frame(314, 413, 77, 50, 0, 0),
         ];
+        this.spider_frames = [
+            new Frame(0, 0, 72, 52, 0, 0),
+            new Frame(72, 0, 72, 56, 0, 0),
+        ];
     }
     return TileSet;
 }());

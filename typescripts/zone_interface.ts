@@ -1,4 +1,5 @@
 import { Door } from "./door";
+import { Monster } from "./monster";
 import { Wall } from "./wall";
 
 export interface Zone {
@@ -6,10 +7,12 @@ export interface Zone {
 
   walls: Wall[];
 
+  monsters: Monster[];
+
   columns: number;
   rows: number;
 
-  graphical_map: number[];
+  source_y: number;
 
   top_coords: number;
 

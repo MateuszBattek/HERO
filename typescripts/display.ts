@@ -52,43 +52,45 @@ export class Display {
     image: HTMLImageElement,
     rest_image: HTMLImageElement,
     top_coords: number,
-    image_columns: number,
-    map: number[],
-    map_columns: number,
-    tile_width: number,
-    tile_height: number
+    width: number,
+    height: number,
+    source_x: number,
+    source_y: number
   ) {
     //top
-    this.buffer.drawImage(rest_image, 0, top_coords, 1640, 19, 0, 0, 1640, 19);
+    this.buffer.drawImage(
+      rest_image,
+      0,
+      top_coords,
+      width,
+      19,
+      0,
+      0,
+      width,
+      19
+    );
 
     //map
-    for (let index = 0; index <= map.length - 1; index++) {
-      let value = map[index];
-      let source_x = (value % image_columns) * tile_width;
-      let source_y = Math.floor(value / image_columns) * tile_height;
-      let destination_x = (index % map_columns) * tile_width;
-      let destination_y = Math.floor(index / map_columns) * tile_height;
-      this.buffer.drawImage(
-        image,
-        source_x,
-        source_y,
-        tile_width,
-        tile_height,
-        destination_x,
-        destination_y + 19,
-        tile_width,
-        tile_height
-      );
-    }
+    this.buffer.drawImage(
+      image,
+      source_x,
+      source_y,
+      width,
+      height,
+      0,
+      19,
+      width,
+      height
+    );
 
     //bottom
-    this.buffer.drawImage(rest_image, 0, 38, 1640, 31, 0, 589, 1640, 31);
+    this.buffer.drawImage(rest_image, 0, 38, width, 31, 0, 589, width, 31);
 
     //info_box
-    this.buffer.drawImage(rest_image, 0, 69, 1640, 260, 0, 620, 1640, 260);
+    this.buffer.drawImage(rest_image, 0, 69, width, 260, 0, 620, width, 260);
 
     //footer
-    this.buffer.drawImage(rest_image, 0, 329, 1640, 59, 0, 880, 1640, 59);
+    this.buffer.drawImage(rest_image, 0, 329, width, 59, 0, 880, width, 59);
   }
 
   drawTimebar(

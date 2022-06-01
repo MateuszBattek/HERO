@@ -30,11 +30,10 @@ window.addEventListener("load", function () {
       assets_manager.tile_set_image,
       assets_manager.rest_map_image,
       game.world.top_coords,
-      game.world.tile_set.columns,
-      game.world.graphical_map,
-      game.world.columns,
-      game.world.tile_set.tile_width,
-      game.world.tile_set.tile_height
+      game.world.width,
+      game.world.height,
+      0,
+      game.world.source_y
     );
 
     display.drawTimebar(
@@ -60,6 +59,30 @@ window.addEventListener("load", function () {
         bomb_frame.width,
         bomb_frame.height
       );
+    }
+
+    //monsters
+    for (let i = 0; i < game.world.monsters.length; i++) {
+      if (game.world.monsters[i].alive) {
+        switch (game.world.monsters[i].type) {
+          case "spider":
+            let spider_frame =
+              game.world.tile_set.spider_frames[
+                game.world.monsters[i].frame_value
+              ];
+            display.drawObject(
+              assets_manager.monsters_image,
+              spider_frame.x,
+              spider_frame.y,
+              game.world.monsters[i].x,
+              game.world.monsters[i].y,
+              spider_frame.width,
+              spider_frame.height,
+              spider_frame.width,
+              spider_frame.height
+            );
+        }
+      }
     }
 
     let helicopter_frame =
@@ -194,25 +217,15 @@ window.addEventListener("load", function () {
   display.buffer.canvas.width = game.world.width;
   display.buffer.imageSmoothingEnabled = true;
 
-  // display.tile_sheet.image.addEventListener(
-  //   "load",
-  //   function () {
-  //     resize();
-
-  //     engine.start();
-  //   },
-  //   { once: true }
-  // );
-
-  // display.tile_sheet.image.src = "images/map.png";
-
   assets_manager.requestJSON("../levels.json", (file: File) => {
+    game.world.setupLevel(file.levels[0]);
     game.world.setup(file.levels[0].zones[0]);
 
     assets_manager.loadTileSetImage(
-      "images/map.png",
+      "images/mapka.png",
       "images/restmap.png",
       "images/hero.png",
+      "images/monsters.png",
       () => {
         resize();
         engine.start();

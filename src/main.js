@@ -14,11 +14,21 @@ window.addEventListener("load", function () {
     };
     var render = function () {
         display.fill(game.world.background);
-        display.drawMap(assets_manager.tile_set_image, assets_manager.rest_map_image, game.world.top_coords, game.world.tile_set.columns, game.world.graphical_map, game.world.columns, game.world.tile_set.tile_width, game.world.tile_set.tile_height);
+        display.drawMap(assets_manager.tile_set_image, assets_manager.rest_map_image, game.world.top_coords, game.world.width, game.world.height, 0, game.world.source_y);
         display.drawTimebar(assets_manager.rest_map_image, 288, 661, Math.round((1315 * game.world.time_limit) / 128), 25);
         if (game.world.bomb) {
             var bomb_frame = game.world.tile_set.bomb_frames[game.world.bomb.frame_value];
             display.drawObject(assets_manager.rest_map_image, bomb_frame.x, bomb_frame.y, game.world.bomb.x, game.world.bomb.y, bomb_frame.width, bomb_frame.height, bomb_frame.width, bomb_frame.height);
+        }
+        //monsters
+        for (var i = 0; i < game.world.monsters.length; i++) {
+            if (game.world.monsters[i].alive) {
+                switch (game.world.monsters[i].type) {
+                    case "spider":
+                        var spider_frame = game.world.tile_set.spider_frames[game.world.monsters[i].frame_value];
+                        display.drawObject(assets_manager.monsters_image, spider_frame.x, spider_frame.y, game.world.monsters[i].x, game.world.monsters[i].y, spider_frame.width, spider_frame.height, spider_frame.width, spider_frame.height);
+                }
+            }
         }
         var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
         display.drawObject(assets_manager.hero_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
@@ -87,18 +97,10 @@ window.addEventListener("load", function () {
     display.buffer.canvas.height = game.world.height;
     display.buffer.canvas.width = game.world.width;
     display.buffer.imageSmoothingEnabled = true;
-    // display.tile_sheet.image.addEventListener(
-    //   "load",
-    //   function () {
-    //     resize();
-    //     engine.start();
-    //   },
-    //   { once: true }
-    // );
-    // display.tile_sheet.image.src = "images/map.png";
     assets_manager.requestJSON("../levels.json", function (file) {
+        game.world.setupLevel(file.levels[0]);
         game.world.setup(file.levels[0].zones[0]);
-        assets_manager.loadTileSetImage("images/map.png", "images/restmap.png", "images/hero.png", function () {
+        assets_manager.loadTileSetImage("images/mapka.png", "images/restmap.png", "images/hero.png", "images/monsters.png", function () {
             resize();
             engine.start();
         });
