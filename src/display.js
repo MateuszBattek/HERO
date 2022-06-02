@@ -42,7 +42,6 @@ var Display = /** @class */ (function () {
     Display.prototype.drawScore = function (image, score, x, y, start_x) {
         var score_string = score.toString();
         for (var i = score_string.length - 1; i > -1; i--) {
-            console.log(+score_string[i] * 80);
             this.buffer.drawImage(image, start_x + +score_string[i] * 80, 651, 80, 56, x - (score_string.length - 1 - i) * 80, y, 80, 56);
         }
     };

@@ -85,7 +85,6 @@ export class Display {
   ) {
     let score_string = score.toString();
     for (let i = score_string.length - 1; i > -1; i--) {
-      console.log(+score_string[i] * 80);
       this.buffer.drawImage(
         image,
         start_x + +score_string[i] * 80,

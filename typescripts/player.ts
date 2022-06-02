@@ -22,6 +22,7 @@ export class Player extends Animator {
   player_sets: Player_Sets;
   helicopter: Helicopter;
   alive: boolean;
+  moving_direction: number;
 
   constructor(x: number, y: number, player_sets: Player_Sets) {
     super(player_sets["fly-left"], 10);
@@ -42,6 +43,7 @@ export class Player extends Animator {
     this.player_sets = player_sets;
     this.helicopter = new Helicopter(x, y, 32 * 1.5, 9 * 1.5);
     this.alive = true;
+    this.moving_direction = 1;
   }
 
   fly() {
@@ -72,16 +74,19 @@ export class Player extends Animator {
 
   stop() {
     this.velocity_x = 0;
+    this.moving_direction = 0;
   }
 
   moveLeft() {
     this.direction_x = -1;
     this.velocity_x = -10;
+    this.moving_direction = -1;
   }
 
   moveRight() {
     this.direction_x = 1;
     this.velocity_x = 10;
+    this.moving_direction = 1;
   }
 
   placeBomb() {
@@ -110,11 +115,11 @@ export class Player extends Animator {
         this.changeFrameSet(this.player_sets["fly-left"], "pause");
       else this.changeFrameSet(this.player_sets["fly-right"], "pause");
     } else if (this.direction_x < 0) {
-      if (this.velocity_x < 0)
+      if (this.moving_direction == -1)
         this.changeFrameSet(this.player_sets["walk-left"], "loop", 2);
       else this.changeFrameSet(this.player_sets["idle-left"], "pause");
     } else if (this.direction_x > 0) {
-      if (this.velocity_x > 0)
+      if (this.moving_direction == 1)
         this.changeFrameSet(this.player_sets["walk-right"], "loop", 2);
       else this.changeFrameSet(this.player_sets["idle-right"], "pause");
     }

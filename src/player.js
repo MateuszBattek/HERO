@@ -36,6 +36,7 @@ var Player = /** @class */ (function (_super) {
         _this.player_sets = player_sets;
         _this.helicopter = new Helicopter(x, y, 32 * 1.5, 9 * 1.5);
         _this.alive = true;
+        _this.moving_direction = 1;
         return _this;
     }
     Player.prototype.fly = function () {
@@ -67,14 +68,17 @@ var Player = /** @class */ (function (_super) {
     };
     Player.prototype.stop = function () {
         this.velocity_x = 0;
+        this.moving_direction = 0;
     };
     Player.prototype.moveLeft = function () {
         this.direction_x = -1;
         this.velocity_x = -10;
+        this.moving_direction = -1;
     };
     Player.prototype.moveRight = function () {
         this.direction_x = 1;
         this.velocity_x = 10;
+        this.moving_direction = 1;
     };
     Player.prototype.placeBomb = function () {
         console.log("BOMBA, UCEIKAC");
@@ -102,13 +106,13 @@ var Player = /** @class */ (function (_super) {
                 this.changeFrameSet(this.player_sets["fly-right"], "pause");
         }
         else if (this.direction_x < 0) {
-            if (this.velocity_x < 0)
+            if (this.moving_direction == -1)
                 this.changeFrameSet(this.player_sets["walk-left"], "loop", 2);
             else
                 this.changeFrameSet(this.player_sets["idle-left"], "pause");
         }
         else if (this.direction_x > 0) {
-            if (this.velocity_x > 0)
+            if (this.moving_direction == 1)
                 this.changeFrameSet(this.player_sets["walk-right"], "loop", 2);
             else
                 this.changeFrameSet(this.player_sets["idle-right"], "pause");
