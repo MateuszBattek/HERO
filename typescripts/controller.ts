@@ -3,12 +3,14 @@ export class Controller {
   right: ButtonInput;
   up: ButtonInput;
   down: ButtonInput;
+  ctrl: ButtonInput;
 
   constructor() {
     this.left = new ButtonInput();
     this.right = new ButtonInput();
     this.up = new ButtonInput();
     this.down = new ButtonInput();
+    this.ctrl = new ButtonInput();
   }
 
   keyDownUp(type: string, key_code: string) {
@@ -25,6 +27,10 @@ export class Controller {
         break;
       case "ArrowDown":
         this.down.getInput(down);
+        break;
+      case "ControlLeft":
+        this.ctrl.getInput(down);
+        break;
     }
   }
 }

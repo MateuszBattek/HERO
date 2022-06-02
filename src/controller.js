@@ -4,6 +4,7 @@ var Controller = /** @class */ (function () {
         this.right = new ButtonInput();
         this.up = new ButtonInput();
         this.down = new ButtonInput();
+        this.ctrl = new ButtonInput();
     }
     Controller.prototype.keyDownUp = function (type, key_code) {
         var down = type == "keydown";
@@ -19,6 +20,10 @@ var Controller = /** @class */ (function () {
                 break;
             case "ArrowDown":
                 this.down.getInput(down);
+                break;
+            case "ControlLeft":
+                this.ctrl.getInput(down);
+                break;
         }
     };
     return Controller;

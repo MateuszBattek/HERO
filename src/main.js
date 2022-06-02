@@ -30,6 +30,9 @@ window.addEventListener("load", function () {
                 }
             }
         }
+        for (var i = 0; i < game.world.bullets.length; i++) {
+            display.drawBullet(game.world.bullets[i], "#978053");
+        }
         var helicopter_frame = game.world.tile_set.helicopter_frames[game.world.player.helicopter.frame_value];
         display.drawObject(assets_manager.hero_image, helicopter_frame.x, helicopter_frame.y, game.world.player.helicopter.x, game.world.player.helicopter.y, helicopter_frame.width, helicopter_frame.height, 48, 13);
         var player_frame = game.world.tile_set.player_frames[game.world.player.frame_value];
@@ -42,6 +45,10 @@ window.addEventListener("load", function () {
         for (var i = 0; i < game.world.bombs; i++) {
             display.drawObject(assets_manager.rest_map_image, 142, 413, 1031 + i * 100, 696, 42, 62, 42, 62);
         }
+        //level
+        display.drawScore(assets_manager.rest_map_image, game.world.level, 498, 800, 800);
+        //score
+        display.drawScore(assets_manager.rest_map_image, game.world.points, 1400, 804, 0);
         //walls
         for (var i = 0; i < game.world.walls.length; i++) {
             if (game.world.walls[i].active) {
@@ -63,7 +70,6 @@ window.addEventListener("load", function () {
             }
             if (controller.up.active) {
                 game.world.player.fly();
-                //controller.up.active = false;
             }
             else {
                 game.world.player.fall();
@@ -71,6 +77,9 @@ window.addEventListener("load", function () {
             if (controller.down.active) {
                 game.world.placeBomb();
                 controller.down.active = false;
+            }
+            if (controller.ctrl.active) {
+                game.world.fire();
             }
         }
         if (game.world.door || game.world.reset) {
@@ -92,20 +101,23 @@ window.addEventListener("load", function () {
     };
     var assets_manager = new AssetsManager();
     var controller = new Controller();
-    var display = new Display(document.querySelector("canvas"));
+    var display = new Display(document.querySelector("canvas"), document.querySelector("video"));
     var game = new Game();
     var engine = new Engine(1000 / 30, render, update);
     display.buffer.canvas.height = game.world.height;
     display.buffer.canvas.width = game.world.width;
     display.buffer.imageSmoothingEnabled = true;
-    assets_manager.requestJSON("../levels.json", function (file) {
-        game.world.setupLevel(file.levels[0]);
-        game.world.setup(file.levels[0].zones[0]);
-        assets_manager.loadTileSetImage("images/mapka.png", "images/restmap.png", "images/hero.png", "images/monsters.png", function () {
-            resize();
-            engine.start();
+    var startGame = function () {
+        assets_manager.requestJSON("../levels.json", function (file) {
+            game.world.setupLevel(file.levels[0]);
+            game.world.setup(file.levels[0].zones[0]);
+            assets_manager.loadTileSetImage("images/mapka.png", "images/restmap.png", "images/hero.png", "images/monsters.png", function () {
+                resize();
+                engine.start();
+            });
         });
-    });
+    };
+    startGame();
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);
     window.addEventListener("resize", resize);

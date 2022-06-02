@@ -1,10 +1,14 @@
+import { Bullet } from "./bullet";
+
 export class Display {
   buffer: CanvasRenderingContext2D;
   context: CanvasRenderingContext2D;
+  video: HTMLVideoElement;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, video: HTMLVideoElement) {
     this.buffer = document.createElement("canvas").getContext("2d")!;
     this.context = canvas.getContext("2d")!;
+    this.video = video;
   }
 
   // drawPlayer(rectangle: Player, color1: string, color2: string) {
@@ -23,6 +27,30 @@ export class Display {
   //     rectangle.height - 40
   //   );
   // }
+
+  drawBullet(bullet: Bullet, color: string) {
+    this.buffer.fillStyle = color;
+
+    this.buffer.fillRect(
+      Math.round(bullet.x),
+      Math.round(bullet.y),
+      bullet.width,
+      bullet.height
+    );
+  }
+
+  playVideo() {
+    this.video.play();
+    // this.video.addEventListener(
+    //   "play",
+    //   () => {
+    //     this.width = video.videoWidth / 2;
+    //     this.height = video.videoHeight / 2;
+    //     this.timerCallback();
+    //   },
+    //   false
+    // );
+  }
 
   drawObject(
     image: HTMLImageElement,
@@ -46,6 +74,30 @@ export class Display {
       width,
       height
     );
+  }
+
+  drawScore(
+    image: HTMLImageElement,
+    score: number,
+    x: number,
+    y: number,
+    start_x: number
+  ) {
+    let score_string = score.toString();
+    for (let i = score_string.length - 1; i > -1; i--) {
+      console.log(+score_string[i] * 80);
+      this.buffer.drawImage(
+        image,
+        start_x + +score_string[i] * 80,
+        651,
+        80,
+        56,
+        x - (score_string.length - 1 - i) * 80,
+        y,
+        80,
+        56
+      );
+    }
   }
 
   drawMap(

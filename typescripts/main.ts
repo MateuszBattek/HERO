@@ -5,7 +5,6 @@ import { Game } from "./game";
 import { AssetsManager } from "./assetsManager";
 import { Level } from "./level_interface";
 import { File } from "./file_interface";
-import { World } from "./world";
 
 window.addEventListener("load", function () {
   "use strict";
@@ -85,6 +84,10 @@ window.addEventListener("load", function () {
       }
     }
 
+    for (let i = 0; i < game.world.bullets.length; i++) {
+      display.drawBullet(game.world.bullets[i], "#978053");
+    }
+
     let helicopter_frame =
       game.world.tile_set.helicopter_frames[
         game.world.player.helicopter.frame_value
@@ -147,6 +150,24 @@ window.addEventListener("load", function () {
       );
     }
 
+    //level
+    display.drawScore(
+      assets_manager.rest_map_image,
+      game.world.level,
+      498,
+      800,
+      800
+    );
+
+    //score
+    display.drawScore(
+      assets_manager.rest_map_image,
+      game.world.points,
+      1400,
+      804,
+      0
+    );
+
     //walls
     for (let i = 0; i < game.world.walls.length; i++) {
       if (game.world.walls[i].active) {
@@ -177,13 +198,15 @@ window.addEventListener("load", function () {
       }
       if (controller.up.active) {
         game.world.player.fly();
-        //controller.up.active = false;
       } else {
         game.world.player.fall();
       }
       if (controller.down.active) {
         game.world.placeBomb();
         controller.down.active = false;
+      }
+      if (controller.ctrl.active) {
+        game.world.fire();
       }
     }
 
@@ -210,7 +233,10 @@ window.addEventListener("load", function () {
 
   let assets_manager = new AssetsManager();
   let controller = new Controller();
-  let display = new Display(document.querySelector("canvas")!);
+  let display = new Display(
+    document.querySelector("canvas")!,
+    document.querySelector("video")!
+  );
   let game = new Game();
   let engine = new Engine(1000 / 30, render, update);
 
@@ -218,21 +244,25 @@ window.addEventListener("load", function () {
   display.buffer.canvas.width = game.world.width;
   display.buffer.imageSmoothingEnabled = true;
 
-  assets_manager.requestJSON("../levels.json", (file: File) => {
-    game.world.setupLevel(file.levels[0]);
-    game.world.setup(file.levels[0].zones[0]);
+  let startGame = function (): void {
+    assets_manager.requestJSON("../levels.json", (file: File) => {
+      game.world.setupLevel(file.levels[0]);
+      game.world.setup(file.levels[0].zones[0]);
 
-    assets_manager.loadTileSetImage(
-      "images/mapka.png",
-      "images/restmap.png",
-      "images/hero.png",
-      "images/monsters.png",
-      () => {
-        resize();
-        engine.start();
-      }
-    );
-  });
+      assets_manager.loadTileSetImage(
+        "images/mapka.png",
+        "images/restmap.png",
+        "images/hero.png",
+        "images/monsters.png",
+        () => {
+          resize();
+          engine.start();
+        }
+      );
+    });
+  };
+
+  startGame();
 
   window.addEventListener("keydown", keyDownUp);
   window.addEventListener("keyup", keyDownUp);

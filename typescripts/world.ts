@@ -1,4 +1,5 @@
 import { Bomb } from "./bomb";
+import { Bullet } from "./bullet";
 import { Collider } from "./collider";
 import { Door } from "./door";
 import { Player_Sets } from "./frame_sets_interface";
@@ -46,6 +47,10 @@ export class World {
   lives: number;
   bombs: number;
 
+  bullets: Bullet[];
+
+  points: number;
+
   reset: boolean;
 
   constructor() {
@@ -76,6 +81,8 @@ export class World {
     this.doors = [];
     this.door = undefined;
 
+    this.bullets = [];
+
     this.tile_set = new TileSet(10, 164, 95);
 
     this.height = this.tile_set.tile_height * this.rows + 369;
@@ -87,6 +94,8 @@ export class World {
     this.lives = 4;
     this.bombs = 6;
     this.bomb = undefined;
+
+    this.points = 0;
 
     this.reset = false;
   }
@@ -178,21 +187,15 @@ export class World {
 
     for (let index = zone.walls.length - 1; index > -1; --index) {
       let wall = this.zone.walls[index];
-      if (wall.active) this.walls[index] = new Wall(wall);
+      if (wall && wall.active) this.walls[index] = new Wall(wall);
     }
 
     for (let index = zone.monsters.length - 1; index > -1; --index) {
       let monster = this.zone.monsters[index];
-      if (monster.alive) this.monsters[index] = new Monster(monster);
+      if (monster && monster.alive) this.monsters[index] = new Monster(monster);
     }
 
-    /* If the player entered into a door, this.door will reference that door.
-       Here it will be used to set player's location to the door's destination. */
     if (this.door) {
-      /* If a destination is equal to -1, that means it won't be used. Since
-         each zone spans from 0 to its width and height, any negative number would
-         be invalid. If a door's destination is -1, the player will keep his current
-         position for that axis. */
       if (this.door.destination_x != -1) {
         this.player.setCenterX(this.door.destination_x);
         this.player.setOldCenterX(this.door.destination_x); // It's important to reset the old position as well.
@@ -212,6 +215,17 @@ export class World {
       this.bomb = new Bomb(this.player.getCenterX(), this.player.getBottom());
       this.bombs--;
     }
+  }
+
+  fire() {
+    let bullet = new Bullet(
+      this.player.direction_x == 1
+        ? this.player.getRight()
+        : this.player.getLeft() - 50,
+      this.player.getTop() + 10,
+      this.player.direction_x
+    );
+    this.bullets.push(bullet);
   }
 
   checkTimeLimit() {
@@ -251,7 +265,7 @@ export class World {
     if (Date.now() - this.time >= 3000) {
       if (this.monster_index >= 0) {
         this.monsters[this.monster_index].alive = false;
-        this.monsters.splice(this.monster_index);
+        //this.monsters.splice(this.monster_index);
         this.monster_index = -1;
       }
 
@@ -284,7 +298,7 @@ export class World {
         ) <= 100 &&
         Math.abs(this.bomb!.y - wall.y) <= 200
       ) {
-        console.log("broke");
+        this.points += 75;
         wall.active = false;
       }
     }
@@ -351,6 +365,31 @@ export class World {
         this.player.die();
         this.monster_index = index;
         break;
+      }
+    }
+
+    for (let index = this.bullets.length - 1; index > -1; --index) {
+      let bullet = this.bullets[index];
+      bullet.y = this.player.getTop() + 10;
+      bullet.move(index);
+
+      if (bullet.moves >= 4) {
+        this.bullets.splice(this.bullets.indexOf(bullet));
+      }
+    }
+
+    for (let index = this.bullets.length - 1; index > -1; --index) {
+      let bullet = this.bullets[index];
+
+      for (let index = this.monsters.length - 1; index > -1; --index) {
+        let monster = this.monsters[index];
+
+        if (monster.collideObject(bullet)) {
+          this.monsters[this.monsters.indexOf(monster)].alive = false;
+          this.points += 50;
+          //this.monsters.splice(this.monsters.indexOf(monster));
+          break;
+        }
       }
     }
 

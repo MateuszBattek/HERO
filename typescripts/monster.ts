@@ -1,5 +1,6 @@
 import { Animator } from "./animator";
 import { Player } from "./player";
+import { Object } from "./object";
 
 export class Monster extends Animator {
   x: number;
@@ -28,7 +29,7 @@ export class Monster extends Animator {
     }
   }
 
-  collideObject(object: Player) {
+  collideObject(object: Object) {
     if (!this.alive) return false;
     if (
       this.x + this.width < object.getLeft() ||
