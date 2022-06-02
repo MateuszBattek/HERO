@@ -43,6 +43,21 @@ window.addEventListener("load", function () {
       25
     );
 
+    //score_bubble
+    if (game.world.score_bubble) {
+      display.drawObject(
+        assets_manager.rest_map_image,
+        game.world.score_bubble.type * 70,
+        707,
+        game.world.score_bubble.x,
+        game.world.score_bubble.y,
+        70,
+        24,
+        70,
+        24
+      );
+    }
+
     if (game.world.bomb) {
       let bomb_frame =
         game.world.tile_set.bomb_frames[game.world.bomb.frame_value];

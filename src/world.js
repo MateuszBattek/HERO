@@ -40,6 +40,7 @@ var World = /** @class */ (function () {
         this.bombs = 6;
         this.bomb = undefined;
         this.points = 0;
+        this.score_bubble = null;
         this.reset = false;
     }
     World.prototype.collideObject = function (object) {
@@ -179,6 +180,12 @@ var World = /** @class */ (function () {
                 Math.abs(this.bomb.y - wall.y) <= 200) {
                 this.points += 75;
                 wall.active = false;
+                this.score_bubble = {
+                    type: 0,
+                    x: this.bomb.x,
+                    y: this.bomb.y,
+                    time: Date.now(),
+                };
             }
         }
     };
@@ -250,10 +257,20 @@ var World = /** @class */ (function () {
                 if (monster.collideObject(bullet)) {
                     this.monsters[this.monsters.indexOf(monster)].alive = false;
                     this.points += 50;
+                    this.score_bubble = {
+                        type: 1,
+                        x: monster.x,
+                        y: monster.y,
+                        time: Date.now(),
+                    };
                     //this.monsters.splice(this.monsters.indexOf(monster));
                     break;
                 }
             }
+        }
+        if (this.score_bubble) {
+            if (Date.now() - this.score_bubble.time >= 1500)
+                this.score_bubble = null;
         }
         this.player.updateAnimation();
         this.bombAnimate();

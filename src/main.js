@@ -16,6 +16,10 @@ window.addEventListener("load", function () {
         display.fill(game.world.background);
         display.drawMap(assets_manager.tile_set_image, assets_manager.rest_map_image, game.world.top_coords, game.world.width, game.world.height, 0, game.world.source_y);
         display.drawTimebar(assets_manager.rest_map_image, 288, 661, Math.round((1315 * game.world.time_limit) / 128), 25);
+        //score_bubble
+        if (game.world.score_bubble) {
+            display.drawObject(assets_manager.rest_map_image, game.world.score_bubble.type * 70, 707, game.world.score_bubble.x, game.world.score_bubble.y, 70, 24, 70, 24);
+        }
         if (game.world.bomb) {
             var bomb_frame = game.world.tile_set.bomb_frames[game.world.bomb.frame_value];
             display.drawObject(assets_manager.rest_map_image, bomb_frame.x, bomb_frame.y, game.world.bomb.x, game.world.bomb.y, bomb_frame.width, bomb_frame.height, bomb_frame.width, bomb_frame.height);
