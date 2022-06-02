@@ -34,36 +34,22 @@ var Monster = /** @class */ (function (_super) {
     Monster.prototype.collideObject = function (object) {
         if (!this.alive)
             return false;
-        if (((object.getLeft() > this.x && object.getLeft() < this.x + this.width) ||
-            (object.getRight() > this.x &&
-                object.getRight() < this.x + this.width) ||
-            (object.getCenterX() > this.x &&
-                object.getCenterX() < this.x + this.width)) &&
-            ((object.getTop() > this.y && object.getTop() < this.y + this.height) ||
-                (object.getBottom() > this.y &&
-                    object.getBottom() < this.y + this.height) ||
-                (object.getCenterY() > this.y &&
-                    object.getCenterY() < this.y + this.height)))
-            return true;
-        // if (object.getRight() > this.x && object.getOldRight() <= this.x) {
-        //   return true;
-        // }
-        // if (
-        //   object.getLeft() < this.x + this.width &&
-        //   object.getOldLeft() >= this.x + this.width
-        // ) {
-        //   return true;
-        // }
-        // if (object.getBottom() > this.y && object.getOldBottom() <= this.y) {
-        //   return true;
-        // }
-        // if (
-        //   object.getTop() < this.y + this.height &&
-        //   object.getOldTop() >= this.y + this.height
-        // ) {
-        //   return true;
-        // }
-        return false;
+        if (this.x + this.width < object.getLeft() ||
+            this.x > object.getRight() ||
+            this.y + this.height < object.getTop() ||
+            this.y > object.getBottom())
+            return false;
+        return true;
+    };
+    Monster.prototype.updatePosition = function () {
+        switch (this.type) {
+            case "spider":
+                if (this.frame_index == 0)
+                    this.height = 52;
+                else
+                    this.height = 56;
+                break;
+        }
     };
     return Monster;
 }(Animator));

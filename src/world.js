@@ -79,6 +79,7 @@ var World = /** @class */ (function () {
         this.rows = this.zone.rows;
         this.walls = new Array();
         this.doors = new Array();
+        this.monsters = new Array();
         this.zone_id = this.zone.id;
         //Generate new doors.
         for (var index = zone.doors.length - 1; index > -1; --index) {
@@ -131,25 +132,30 @@ var World = /** @class */ (function () {
             }
         }
     };
+    World.prototype.resetGame = function () {
+        this.level = 1;
+        this.zone_id = 0;
+        this.walls = [];
+        this.doors = [];
+        this.door = undefined;
+        this.lives = 4;
+        this.bombs = 6;
+        this.time = Date.now();
+        this.player.x = 300;
+        this.player.y = 19;
+        this.player.direction_x = 1;
+        this.reset = true;
+        this.time_limit = 128;
+    };
     World.prototype.reviveCooldown = function () {
         if (Date.now() - this.time >= 3000) {
-            if (this.lives == 0) {
-                this.level = 1;
-                this.zone_id = 0;
-                this.walls = [];
-                this.doors = [];
-                this.door = undefined;
-                this.lives = 4;
-                this.bombs = 6;
-                this.time = Date.now();
-                this.player.x = 300;
-                this.player.y = 19;
-                this.reset = true;
-                this.time_limit = 128;
-            }
             if (this.monster_index >= 0) {
                 this.monsters[this.monster_index].alive = false;
+                this.monsters.splice(this.monster_index);
                 this.monster_index = -1;
+            }
+            if (this.lives == 0) {
+                this.resetGame();
             }
             this.player.revive();
         }
@@ -211,24 +217,17 @@ var World = /** @class */ (function () {
             if (door.collideObject(this.player)) {
                 this.zones[this.zone_id].doors = this.doors;
                 this.zones[this.zone_id].walls = this.walls;
+                this.zones[this.zone_id].monsters = this.monsters;
                 this.door = door;
             }
         }
         for (var index = this.monsters.length - 1; index > -1; --index) {
             var monster = this.monsters[index];
             monster.animate();
-            switch (monster.type) {
-                case "spider":
-                    if (monster.frame_index == 0)
-                        monster.height = 52;
-                    else
-                        monster.height = 56;
-                    break;
-            }
-            if (monster.collideObject(this.player)) {
+            monster.updatePosition();
+            if (monster.collideObject(this.player) && this.player.alive) {
                 this.lives--;
                 this.player.die();
-                //monster.alive = false;
                 this.monster_index = index;
                 break;
             }

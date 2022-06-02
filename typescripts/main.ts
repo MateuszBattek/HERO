@@ -191,13 +191,14 @@ window.addEventListener("load", function () {
       game.world.reset = false;
       engine.stop();
       assets_manager.requestJSON("../levels.json", (file: File) => {
-        console.log(game.world.door!.destination_zone);
         if (game.world.door) {
+          console.log(game.world.door!.destination_zone);
           game.world.setup(
             file.levels[0].zones[+game.world.door!.destination_zone]
           );
         } else {
-          game.world.setup(file.levels[0].zones[game.world.zone_id]);
+          game.world.setupLevel(file.levels[0]);
+          game.world.setup(file.levels[0].zones[0]);
         }
 
         engine.start();
