@@ -61,6 +61,7 @@ export class World {
 
   block: boolean;
   reset: boolean;
+  video_playing: boolean;
 
   constructor(audioArray: HTMLAudioElement[]) {
     this.collider = new Collider();
@@ -113,6 +114,7 @@ export class World {
 
     this.block = false;
     this.reset = false;
+    this.video_playing = true;
   }
 
   collideObject(object: Player): void {

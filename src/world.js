@@ -46,6 +46,7 @@ var World = /** @class */ (function () {
         this.delay = 0;
         this.block = false;
         this.reset = false;
+        this.video_playing = true;
     }
     World.prototype.collideObject = function (object) {
         if (this.zone_id == 0) {

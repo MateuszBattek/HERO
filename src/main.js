@@ -5,6 +5,8 @@ import { Game } from "./game";
 import { AssetsManager } from "./assetsManager";
 window.addEventListener("load", function () {
     "use strict";
+    // let video = this.document.querySelector("video");
+    // video?.play();
     var audioArray = [
         new Audio("../sounds/flying.mp3"),
         new Audio("../sounds/bomb_as_points.mp3"),
@@ -77,6 +79,7 @@ window.addEventListener("load", function () {
         display.render();
     };
     var update = function () {
+        // if (!game.world.video_playing) {
         if (!game.world.block) {
             if (game.world.player.alive) {
                 if (controller.left.active || controller.right.active) {
@@ -125,6 +128,18 @@ window.addEventListener("load", function () {
             }
         }
         game.update();
+        // } else {
+        //   if (controller.f2.active) {
+        //     game.world.video_playing = false;
+        //     controller.f2.active = false;
+        //     video!.pause();
+        //     video!.currentTime = 0;
+        //     video!.style.display = "none";
+        //     engine.stop();
+        //     startGame();
+        //     //engine.start();
+        //}
+        //}
     };
     var assets_manager = new AssetsManager();
     var controller = new Controller();
@@ -135,16 +150,21 @@ window.addEventListener("load", function () {
     display.buffer.canvas.width = game.world.width;
     display.buffer.imageSmoothingEnabled = true;
     var startGame = function () {
+        // button = null;
+        button.style.display = "none";
         assets_manager.requestJSON("../levels.json", function (file) {
             game.world.setupLevel(file.levels[0]);
             game.world.setup(file.levels[0].zones[0]);
+            game.world.loadLevel(1);
             assets_manager.loadTileSetImage("images/mapka.png", "images/restmap.png", "images/hero.png", "images/monsters.png", function () {
                 resize();
                 engine.start();
             });
         });
     };
-    startGame();
+    var button = document.querySelector("button");
+    button === null || button === void 0 ? void 0 : button.addEventListener("click", startGame);
+    //startGame();
     window.addEventListener("keydown", keyDownUp);
     window.addEventListener("keyup", keyDownUp);
     window.addEventListener("resize", resize);
