@@ -274,6 +274,23 @@ export class Collider {
           return;
         if (this.collidePlatformLeft(object, tile_x + tile_width / 2)) return;
         break;
+      case 26:
+        if (this.collidePlatformRight(object, tile_x + (3 * tile_width) / 4))
+          return;
+        break;
+      case 27:
+        if (
+          this.collideRightPlatformBottom(
+            object,
+            tile_y + tile_height,
+            tile_x,
+            (3 * tile_width) / 4
+          )
+        )
+          return;
+        if (this.collidePlatformRight(object, tile_x + (3 * tile_width) / 4))
+          return;
+        break;
     }
   }
 }

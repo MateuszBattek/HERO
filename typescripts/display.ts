@@ -103,6 +103,7 @@ export class Display {
     image: HTMLImageElement,
     rest_image: HTMLImageElement,
     top_coords: number,
+    bottom_coords: number,
     width: number,
     height: number,
     source_x: number,
@@ -135,7 +136,17 @@ export class Display {
     );
 
     //bottom
-    this.buffer.drawImage(rest_image, 0, 38, width, 31, 0, 589, width, 31);
+    this.buffer.drawImage(
+      rest_image,
+      0,
+      bottom_coords,
+      width,
+      31,
+      0,
+      589,
+      width,
+      31
+    );
 
     //info_box
     this.buffer.drawImage(rest_image, 0, 69, width, 260, 0, 620, width, 260);

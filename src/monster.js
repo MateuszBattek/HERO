@@ -20,12 +20,17 @@ var Monster = /** @class */ (function (_super) {
         var _this = _super.call(this, [0, 1], 5) || this;
         _this.x = monster.x;
         _this.y = monster.y;
+        _this.base_x = monster.x;
+        _this.base_y = monster.y;
         _this.width = monster.width;
         _this.height = monster.height;
         _this.alive = monster.alive;
         _this.type = monster.type;
         switch (monster.type) {
             case "spider":
+                _this.changeFrameSet([0, 1], "loop", 8);
+                break;
+            case "bat":
                 _this.changeFrameSet([0, 1], "loop", 8);
                 break;
         }
@@ -48,6 +53,12 @@ var Monster = /** @class */ (function (_super) {
                     this.height = 52;
                 else
                     this.height = 56;
+                break;
+            case "bat":
+                if (this.frame_index == 0)
+                    this.y += 2;
+                else
+                    this.y -= 2;
                 break;
         }
     };

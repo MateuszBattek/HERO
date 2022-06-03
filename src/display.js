@@ -45,13 +45,13 @@ var Display = /** @class */ (function () {
             this.buffer.drawImage(image, start_x + +score_string[i] * 80, 651, 80, 56, x - (score_string.length - 1 - i) * 80, y, 80, 56);
         }
     };
-    Display.prototype.drawMap = function (image, rest_image, top_coords, width, height, source_x, source_y) {
+    Display.prototype.drawMap = function (image, rest_image, top_coords, bottom_coords, width, height, source_x, source_y) {
         //top
         this.buffer.drawImage(rest_image, 0, top_coords, width, 19, 0, 0, width, 19);
         //map
         this.buffer.drawImage(image, source_x, source_y, width, height, 0, 19, width, height);
         //bottom
-        this.buffer.drawImage(rest_image, 0, 38, width, 31, 0, 589, width, 31);
+        this.buffer.drawImage(rest_image, 0, bottom_coords, width, 31, 0, 589, width, 31);
         //info_box
         this.buffer.drawImage(rest_image, 0, 69, width, 260, 0, 620, width, 260);
         //footer

@@ -9,6 +9,15 @@ import { File } from "./file_interface";
 window.addEventListener("load", function () {
   "use strict";
 
+  let audioArray = [
+    new Audio("../sounds/flying.mp3"),
+    new Audio("../sounds/bomb_as_points.mp3"),
+    new Audio("../sounds/explode.mp3"),
+    new Audio("../sounds/fire.mp3"),
+    new Audio("../sounds/load_points.mp3"),
+    new Audio("../sounds/place_bomb.mp3"),
+  ];
+
   let keyDownUp = function (event: KeyboardEvent): void {
     controller.keyDownUp(event.type, event.code);
   };
@@ -29,6 +38,7 @@ window.addEventListener("load", function () {
       assets_manager.tile_set_image,
       assets_manager.rest_map_image,
       game.world.top_coords,
+      game.world.bottom_coords,
       game.world.width,
       game.world.height,
       0,
@@ -42,6 +52,57 @@ window.addEventListener("load", function () {
       Math.round((1315 * game.world.time_limit) / 128),
       25
     );
+
+    //lives
+    for (let i = 0; i < game.world.lives - 1; i++) {
+      display.drawObject(
+        assets_manager.rest_map_image,
+        0,
+        413,
+        190 + i * 100,
+        696,
+        60,
+        68,
+        60,
+        68
+      );
+    }
+
+    //bombs
+    for (let i = 0; i < game.world.bombs; i++) {
+      display.drawObject(
+        assets_manager.rest_map_image,
+        142,
+        413,
+        1031 + i * 100,
+        696,
+        42,
+        62,
+        42,
+        62
+      );
+    }
+
+    //level
+    display.drawScore(
+      assets_manager.rest_map_image,
+      game.world.level,
+      498,
+      800,
+      800
+    );
+
+    //score
+    display.drawScore(
+      assets_manager.rest_map_image,
+      game.world.points,
+      1400,
+      804,
+      0
+    );
+
+    // if(!game.world.block)
+    // {}
 
     //score_bubble
     if (game.world.score_bubble) {
@@ -95,6 +156,24 @@ window.addEventListener("load", function () {
               spider_frame.width,
               spider_frame.height
             );
+            break;
+          case "bat":
+            let bat_frame =
+              game.world.tile_set.bat_frames[
+                game.world.monsters[i].frame_value
+              ];
+            display.drawObject(
+              assets_manager.monsters_image,
+              bat_frame.x,
+              bat_frame.y,
+              game.world.monsters[i].x,
+              game.world.monsters[i].y,
+              bat_frame.width,
+              bat_frame.height,
+              bat_frame.width,
+              bat_frame.height
+            );
+            break;
         }
       }
     }
@@ -135,54 +214,6 @@ window.addEventListener("load", function () {
       97
     );
 
-    //lives
-    for (let i = 0; i < game.world.lives - 1; i++) {
-      display.drawObject(
-        assets_manager.rest_map_image,
-        0,
-        413,
-        190 + i * 100,
-        696,
-        60,
-        68,
-        60,
-        68
-      );
-    }
-
-    //bombs
-    for (let i = 0; i < game.world.bombs; i++) {
-      display.drawObject(
-        assets_manager.rest_map_image,
-        142,
-        413,
-        1031 + i * 100,
-        696,
-        42,
-        62,
-        42,
-        62
-      );
-    }
-
-    //level
-    display.drawScore(
-      assets_manager.rest_map_image,
-      game.world.level,
-      498,
-      800,
-      800
-    );
-
-    //score
-    display.drawScore(
-      assets_manager.rest_map_image,
-      game.world.points,
-      1400,
-      804,
-      0
-    );
-
     //walls
     for (let i = 0; i < game.world.walls.length; i++) {
       if (game.world.walls[i].active) {
@@ -204,43 +235,54 @@ window.addEventListener("load", function () {
   };
 
   let update = function (): void {
-    if (game.world.player.alive) {
-      if (controller.left.active || controller.right.active) {
-        if (controller.left.active) game.world.player.moveLeft();
-        else game.world.player.moveRight();
-      } else {
-        game.world.player.stop();
-      }
-      if (controller.up.active) {
-        game.world.player.fly();
-      } else {
-        game.world.player.fall();
-      }
-      if (controller.down.active) {
-        game.world.placeBomb();
-        controller.down.active = false;
-      }
-      if (controller.ctrl.active) {
-        game.world.fire();
-      }
-    }
-
-    if (game.world.door || game.world.reset) {
-      game.world.reset = false;
-      engine.stop();
-      assets_manager.requestJSON("../levels.json", (file: File) => {
-        if (game.world.door) {
-          console.log(game.world.door!.destination_zone);
-          game.world.setup(
-            file.levels[0].zones[+game.world.door!.destination_zone]
-          );
+    if (!game.world.block) {
+      if (game.world.player.alive) {
+        if (controller.left.active || controller.right.active) {
+          if (controller.left.active) game.world.player.moveLeft();
+          else game.world.player.moveRight();
         } else {
-          game.world.setupLevel(file.levels[0]);
-          game.world.setup(file.levels[0].zones[0]);
+          game.world.player.stop();
         }
+        if (controller.up.active) {
+          game.world.player.fly();
+        } else {
+          game.world.player.fall();
+        }
+        if (controller.down.active) {
+          game.world.placeBomb();
+          controller.down.active = false;
+        }
+        if (controller.ctrl.active) {
+          game.world.fire();
+        }
+      }
 
-        engine.start();
-      });
+      if (game.world.player.flying) {
+        audioArray[0].play();
+      }
+
+      if (game.world.door || game.world.reset) {
+        game.world.reset = false;
+        engine.stop();
+        assets_manager.requestJSON("../levels.json", (file: File) => {
+          if (game.world.door) {
+            game.world.setup(
+              file.levels[game.world.level - 1].zones[
+                +game.world.door!.destination_zone
+              ]
+            );
+          } else {
+            if (!file.levels[game.world.level - 1]) {
+              engine.stop();
+              return;
+            }
+            game.world.setupLevel(file.levels[game.world.level - 1]);
+            game.world.setup(file.levels[game.world.level - 1].zones[0]);
+          }
+
+          engine.start();
+        });
+      }
     }
 
     game.update();
@@ -252,7 +294,7 @@ window.addEventListener("load", function () {
     document.querySelector("canvas")!,
     document.querySelector("video")!
   );
-  let game = new Game();
+  let game = new Game(audioArray);
   let engine = new Engine(1000 / 30, render, update);
 
   display.buffer.canvas.height = game.world.height;

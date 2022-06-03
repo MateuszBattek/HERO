@@ -10,6 +10,7 @@ import { Score_Bubble } from "./score_bubble_interface";
 import { TileSet } from "./tileSet";
 import { Wall } from "./wall";
 import { Zone } from "./zone_interface";
+import { Object } from "./object";
 
 export class World {
   collider: Collider;
@@ -35,9 +36,11 @@ export class World {
   bomb: Bomb | undefined;
 
   tile_set: TileSet;
+  audioArray: HTMLAudioElement[];
 
   source_y!: number;
   top_coords!: number;
+  bottom_coords!: number;
   collision_map!: number[];
   width: number;
   height: number;
@@ -52,11 +55,16 @@ export class World {
 
   points: number;
   score_bubble: Score_Bubble | null;
+  delay: number;
 
+  exit: Object | undefined;
+
+  block: boolean;
   reset: boolean;
 
-  constructor() {
+  constructor(audioArray: HTMLAudioElement[]) {
     this.collider = new Collider();
+    this.audioArray = audioArray;
 
     this.background = "#000000";
     this.player_sets = {
@@ -100,7 +108,10 @@ export class World {
     this.points = 0;
 
     this.score_bubble = null;
+    this.exit = undefined;
+    this.delay = 0;
 
+    this.block = false;
     this.reset = false;
   }
 
@@ -172,9 +183,11 @@ export class World {
     //Get the new tile maps, the new zone, and reset the doors array.
     this.zone = this.zones[zone.id];
     this.zone_id = zone.id;
+    this.score_bubble = null;
 
     this.source_y = this.zone.source_y;
     this.top_coords = this.zone.top_coords;
+    this.bottom_coords = this.zone.bottom_coords;
     this.collision_map = this.zone.collision_map;
     this.columns = this.zone.columns;
     this.rows = this.zone.rows;
@@ -182,6 +195,8 @@ export class World {
     this.doors = new Array();
     this.monsters = new Array();
     this.zone_id = this.zone.id;
+    if (this.zone.exit) this.exit = this.zone.exit;
+    else this.exit = undefined;
 
     //Generate new doors.
     for (let index = zone.doors.length - 1; index > -1; --index) {
@@ -218,6 +233,7 @@ export class World {
     if (!this.player.flying && !this.bomb && this.bombs > 0) {
       this.bomb = new Bomb(this.player.getCenterX(), this.player.getBottom());
       this.bombs--;
+      this.audioArray[5].play();
     }
   }
 
@@ -230,6 +246,7 @@ export class World {
       this.player.direction_x
     );
     this.bullets.push(bullet);
+    this.audioArray[3].play();
   }
 
   checkTimeLimit() {
@@ -256,10 +273,31 @@ export class World {
     this.lives = 4;
     this.bombs = 6;
     this.time = Date.now();
+    this.score_bubble = null;
 
     this.player.x = 300;
     this.player.y = 19;
     this.player.direction_x = 1;
+    this.player.flying = true;
+
+    this.reset = true;
+    this.time_limit = 128;
+  }
+
+  loadLevel(level: number) {
+    this.level = level;
+    this.zone_id = 0;
+    this.walls = [];
+    this.doors = [];
+    this.door = undefined;
+    this.bombs = 6;
+    this.time = Date.now();
+    this.score_bubble = null;
+
+    this.player.x = 300;
+    this.player.y = 19;
+    this.player.direction_x = 1;
+    this.player.flying = true;
 
     this.reset = true;
     this.time_limit = 128;
@@ -278,6 +316,7 @@ export class World {
       }
 
       this.player.revive();
+      this.loadLevel(this.level);
     }
   }
 
@@ -286,7 +325,7 @@ export class World {
       if (
         Math.abs(
           this.bomb!.x + this.bomb!.width / 2 - this.player.getCenterX()
-        ) <= 100 &&
+        ) <= 150 &&
         Math.abs(this.bomb!.y - this.player.y) <= 200
       ) {
         this.player.die();
@@ -298,8 +337,8 @@ export class World {
       if (!wall.active) continue;
       if (
         Math.abs(
-          this.bomb!.x + this.bomb!.width / 2 - wall.x + wall.width / 2
-        ) <= 100 &&
+          this.bomb!.x + this.bomb!.width / 2 - (wall.x + wall.width / 2)
+        ) <= 150 &&
         Math.abs(this.bomb!.y - wall.y) <= 200
       ) {
         this.points += 75;
@@ -312,6 +351,7 @@ export class World {
         };
       }
     }
+    this.audioArray[2].play();
   }
 
   bombAnimate() {
@@ -339,82 +379,130 @@ export class World {
     }
   }
 
+  checkExit() {
+    if (
+      this.exit!.x + this.exit!.width < this.player.getLeft() ||
+      this.exit!.x > this.player.getRight() ||
+      this.exit!.y + this.exit!.height < this.player.getTop() ||
+      this.exit!.y > this.player.getBottom()
+    )
+      return false;
+    return true;
+  }
+
+  animatePoints() {
+    if (this.time_limit > 0) {
+      if (this.time_limit == 1) {
+        this.time_limit -= 1;
+        this.points += this.level * 13;
+      } else {
+        this.time_limit -= 2;
+        this.points += 2 * this.level * 13;
+      }
+      this.delay = Date.now();
+      this.audioArray[4].play();
+    } else if (this.bombs > 0) {
+      if (Date.now() - this.delay >= 522) {
+        this.audioArray[1].play();
+        this.bombs--;
+        this.points += 50;
+        this.delay = Date.now();
+      }
+    } else {
+      this.block = false;
+      this.loadLevel(++this.level);
+    }
+  }
+
   update() {
-    this.checkTimeLimit();
-    this.reviveCooldown();
-
-    this.player.updatePosition();
-    this.collideObject(this.player);
-
-    for (let index = this.walls.length - 1; index > -1; --index) {
-      let wall = this.walls[index];
-
-      if (wall.collideObject(this.player)) {
+    if (this.exit) {
+      if (this.checkExit()) {
+        this.points += 1000;
+        this.block = true;
+        this.exit = undefined;
       }
     }
-
-    for (let index = this.doors.length - 1; index > -1; --index) {
-      let door = this.doors[index];
-
-      if (door.collideObject(this.player)) {
-        this.zones[this.zone_id].doors = this.doors;
-        this.zones[this.zone_id].walls = this.walls;
-        this.zones[this.zone_id].monsters = this.monsters;
-        this.door = door;
-      }
+    if (this.block) {
+      this.animatePoints();
     }
+    if (!this.block) {
+      this.checkTimeLimit();
+      this.reviveCooldown();
 
-    for (let index = this.monsters.length - 1; index > -1; --index) {
-      let monster = this.monsters[index];
+      this.player.updatePosition();
+      this.collideObject(this.player);
 
-      monster.animate();
-      monster.updatePosition();
+      for (let index = this.walls.length - 1; index > -1; --index) {
+        let wall = this.walls[index];
 
-      if (monster.collideObject(this.player) && this.player.alive) {
-        this.lives--;
-        this.player.die();
-        this.monster_index = index;
-        break;
+        if (wall.collideObject(this.player)) {
+        }
       }
-    }
 
-    for (let index = this.bullets.length - 1; index > -1; --index) {
-      let bullet = this.bullets[index];
-      bullet.y = this.player.getTop() + 10;
-      bullet.move(index);
+      for (let index = this.doors.length - 1; index > -1; --index) {
+        let door = this.doors[index];
 
-      if (bullet.moves >= 4) {
-        this.bullets.splice(this.bullets.indexOf(bullet));
+        if (door.collideObject(this.player)) {
+          this.zones[this.zone_id].doors = this.doors;
+          this.zones[this.zone_id].walls = this.walls;
+          this.zones[this.zone_id].monsters = this.monsters;
+          this.door = door;
+        }
       }
-    }
-
-    for (let index = this.bullets.length - 1; index > -1; --index) {
-      let bullet = this.bullets[index];
 
       for (let index = this.monsters.length - 1; index > -1; --index) {
         let monster = this.monsters[index];
 
-        if (monster.collideObject(bullet)) {
-          this.monsters[this.monsters.indexOf(monster)].alive = false;
-          this.points += 50;
-          this.score_bubble = {
-            type: 1,
-            x: monster.x,
-            y: monster.y,
-            time: Date.now(),
-          };
-          //this.monsters.splice(this.monsters.indexOf(monster));
+        monster.animate();
+        monster.updatePosition();
+
+        if (monster.collideObject(this.player) && this.player.alive) {
+          this.lives--;
+          this.player.die();
+          this.monster_index = index;
           break;
         }
       }
+
+      for (let index = this.bullets.length - 1; index > -1; --index) {
+        let bullet = this.bullets[index];
+        bullet.y = this.player.getTop() + 10;
+        bullet.move(index);
+
+        if (bullet.moves >= 4) {
+          this.bullets.splice(this.bullets.indexOf(bullet));
+        }
+      }
+
+      for (let index = this.bullets.length - 1; index > -1; --index) {
+        let bullet = this.bullets[index];
+
+        for (let index = this.monsters.length - 1; index > -1; --index) {
+          let monster = this.monsters[index];
+
+          if (monster.collideObject(bullet)) {
+            this.monsters[this.monsters.indexOf(monster)].alive = false;
+            this.points += 50;
+            this.score_bubble = {
+              type: 1,
+              x: monster.x,
+              y: monster.y,
+              time: Date.now(),
+            };
+            //this.monsters.splice(this.monsters.indexOf(monster));
+            break;
+          }
+        }
+      }
+
+      if (this.score_bubble) {
+        if (Date.now() - this.score_bubble.time >= 1500)
+          this.score_bubble = null;
+      }
+
+      this.player.updateAnimation();
+
+      this.bombAnimate();
     }
-
-    if (this.score_bubble) {
-      if (Date.now() - this.score_bubble.time >= 1500) this.score_bubble = null;
-    }
-
-    this.player.updateAnimation();
-
-    this.bombAnimate();
   }
 }

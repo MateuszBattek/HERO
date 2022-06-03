@@ -5,6 +5,9 @@ import { Object } from "./object";
 export class Monster extends Animator {
   x: number;
   y: number;
+  base_x: number;
+  base_y: number;
+
   width: number;
   height: number;
 
@@ -16,6 +19,8 @@ export class Monster extends Animator {
 
     this.x = monster.x;
     this.y = monster.y;
+    this.base_x = monster.x;
+    this.base_y = monster.y;
     this.width = monster.width;
     this.height = monster.height;
 
@@ -24,6 +29,9 @@ export class Monster extends Animator {
 
     switch (monster.type) {
       case "spider":
+        this.changeFrameSet([0, 1], "loop", 8);
+        break;
+      case "bat":
         this.changeFrameSet([0, 1], "loop", 8);
         break;
     }
@@ -46,6 +54,10 @@ export class Monster extends Animator {
       case "spider":
         if (this.frame_index == 0) this.height = 52;
         else this.height = 56;
+        break;
+      case "bat":
+        if (this.frame_index == 0) this.y += 2;
+        else this.y -= 2;
         break;
     }
   }

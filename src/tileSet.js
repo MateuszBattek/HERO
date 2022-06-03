@@ -38,6 +38,10 @@ var TileSet = /** @class */ (function () {
             new Frame(0, 0, 72, 52, 0, 0),
             new Frame(72, 0, 72, 56, 0, 0),
         ];
+        this.bat_frames = [
+            new Frame(0, 56, 70, 34, 0, 0),
+            new Frame(70, 56, 70, 34, 0, 0),
+        ];
     }
     return TileSet;
 }());

@@ -10,6 +10,7 @@ export class TileSet {
   bomb_frames: Frame[];
 
   spider_frames: Frame[];
+  bat_frames: Frame[];
 
   constructor(columns: number, tile_width: number, tile_height: number) {
     this.columns = columns;
@@ -52,6 +53,11 @@ export class TileSet {
     this.spider_frames = [
       new Frame(0, 0, 72, 52, 0, 0),
       new Frame(72, 0, 72, 56, 0, 0),
+    ];
+
+    this.bat_frames = [
+      new Frame(0, 56, 70, 34, 0, 0),
+      new Frame(70, 56, 70, 34, 0, 0),
     ];
   }
 }
