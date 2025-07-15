@@ -1,3 +1,4 @@
+import "../style.css";
 import { Controller } from "./controller";
 import { Display } from "./display";
 import { Engine } from "./engine";

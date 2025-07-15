@@ -1,40 +1,41 @@
-import { Controller } from "./controller";
-import { Display } from "./display";
-import { Engine } from "./engine";
-import { Game } from "./game";
-import { AssetsManager } from "./assetsManager";
-import { File } from "./file_interface";
+import "./style.css"
+import { Controller } from "./controller"
+import { Display } from "./display"
+import { Engine } from "./engine"
+import { Game } from "./game"
+import { AssetsManager } from "./assetsManager"
+import { File } from "./file_interface"
 
 window.addEventListener("load", function () {
-  "use strict";
+  "use strict"
 
   // let video = this.document.querySelector("video");
   // video?.play();
 
   let audioArray = [
-    new Audio("../sounds/flying.mp3"),
-    new Audio("../sounds/bomb_as_points.mp3"),
-    new Audio("../sounds/explode.mp3"),
-    new Audio("../sounds/fire.mp3"),
-    new Audio("../sounds/load_points.mp3"),
-    new Audio("../sounds/place_bomb.mp3"),
-  ];
+    new Audio("./sounds/flying.mp3"),
+    new Audio("./sounds/bomb_as_points.mp3"),
+    new Audio("./sounds/explode.mp3"),
+    new Audio("./sounds/fire.mp3"),
+    new Audio("./sounds/load_points.mp3"),
+    new Audio("./sounds/place_bomb.mp3"),
+  ]
 
   let keyDownUp = function (event: KeyboardEvent): void {
-    controller.keyDownUp(event.type, event.code);
-  };
+    controller.keyDownUp(event.type, event.code)
+  }
 
   let resize = function (): void {
     display.resize(
       document.documentElement.clientWidth,
       document.documentElement.clientHeight,
       game.world.height / game.world.width
-    );
-    display.render();
-  };
+    )
+    display.render()
+  }
 
   let render = function (): void {
-    display.fill(game.world.background);
+    display.fill(game.world.background)
 
     display.drawMap(
       assets_manager.tile_set_image,
@@ -45,7 +46,7 @@ window.addEventListener("load", function () {
       game.world.height,
       0,
       game.world.source_y
-    );
+    )
 
     display.drawTimebar(
       assets_manager.rest_map_image,
@@ -53,7 +54,7 @@ window.addEventListener("load", function () {
       661,
       Math.round((1315 * game.world.time_limit) / 128),
       25
-    );
+    )
 
     //lives
     for (let i = 0; i < game.world.lives - 1; i++) {
@@ -67,7 +68,7 @@ window.addEventListener("load", function () {
         68,
         60,
         68
-      );
+      )
     }
 
     //bombs
@@ -82,7 +83,7 @@ window.addEventListener("load", function () {
         62,
         42,
         62
-      );
+      )
     }
 
     //level
@@ -92,7 +93,7 @@ window.addEventListener("load", function () {
       498,
       800,
       800
-    );
+    )
 
     //score
     display.drawScore(
@@ -101,7 +102,7 @@ window.addEventListener("load", function () {
       1400,
       804,
       0
-    );
+    )
 
     // if(!game.world.block)
     // {}
@@ -118,12 +119,12 @@ window.addEventListener("load", function () {
         24,
         70,
         24
-      );
+      )
     }
 
     if (game.world.bomb) {
       let bomb_frame =
-        game.world.tile_set.bomb_frames[game.world.bomb.frame_value];
+        game.world.tile_set.bomb_frames[game.world.bomb.frame_value]
 
       display.drawObject(
         assets_manager.rest_map_image,
@@ -135,7 +136,7 @@ window.addEventListener("load", function () {
         bomb_frame.height,
         bomb_frame.width,
         bomb_frame.height
-      );
+      )
     }
 
     //monsters
@@ -146,7 +147,7 @@ window.addEventListener("load", function () {
             let spider_frame =
               game.world.tile_set.spider_frames[
                 game.world.monsters[i].frame_value
-              ];
+              ]
             display.drawObject(
               assets_manager.monsters_image,
               spider_frame.x,
@@ -157,13 +158,11 @@ window.addEventListener("load", function () {
               spider_frame.height,
               spider_frame.width,
               spider_frame.height
-            );
-            break;
+            )
+            break
           case "bat":
             let bat_frame =
-              game.world.tile_set.bat_frames[
-                game.world.monsters[i].frame_value
-              ];
+              game.world.tile_set.bat_frames[game.world.monsters[i].frame_value]
             display.drawObject(
               assets_manager.monsters_image,
               bat_frame.x,
@@ -174,20 +173,20 @@ window.addEventListener("load", function () {
               bat_frame.height,
               bat_frame.width,
               bat_frame.height
-            );
-            break;
+            )
+            break
         }
       }
     }
 
     for (let i = 0; i < game.world.bullets.length; i++) {
-      display.drawBullet(game.world.bullets[i], "#978053");
+      display.drawBullet(game.world.bullets[i], "#978053")
     }
 
     let helicopter_frame =
       game.world.tile_set.helicopter_frames[
         game.world.player.helicopter.frame_value
-      ];
+      ]
 
     display.drawObject(
       assets_manager.hero_image,
@@ -199,10 +198,10 @@ window.addEventListener("load", function () {
       helicopter_frame.height,
       48,
       13
-    );
+    )
 
     let player_frame =
-      game.world.tile_set.player_frames[game.world.player.frame_value];
+      game.world.tile_set.player_frames[game.world.player.frame_value]
 
     display.drawObject(
       assets_manager.hero_image,
@@ -214,7 +213,7 @@ window.addEventListener("load", function () {
       player_frame.height,
       69,
       97
-    );
+    )
 
     //walls
     for (let i = 0; i < game.world.walls.length; i++) {
@@ -229,66 +228,66 @@ window.addEventListener("load", function () {
           game.world.walls[i].height,
           game.world.walls[i].width,
           game.world.walls[i].height
-        );
+        )
       }
     }
 
-    display.render();
-  };
+    display.render()
+  }
 
   let update = function (): void {
     // if (!game.world.video_playing) {
     if (!game.world.block) {
       if (game.world.player.alive) {
         if (controller.left.active || controller.right.active) {
-          if (controller.left.active) game.world.player.moveLeft();
-          else game.world.player.moveRight();
+          if (controller.left.active) game.world.player.moveLeft()
+          else game.world.player.moveRight()
         } else {
-          game.world.player.stop();
+          game.world.player.stop()
         }
         if (controller.up.active) {
-          game.world.player.fly();
+          game.world.player.fly()
         } else {
-          game.world.player.fall();
+          game.world.player.fall()
         }
         if (controller.down.active) {
-          game.world.placeBomb();
-          controller.down.active = false;
+          game.world.placeBomb()
+          controller.down.active = false
         }
         if (controller.ctrl.active) {
-          game.world.fire();
+          game.world.fire()
         }
       }
 
       if (game.world.player.flying) {
-        audioArray[0].play();
+        audioArray[0].play()
       }
 
       if (game.world.door || game.world.reset) {
-        game.world.reset = false;
-        engine.stop();
+        game.world.reset = false
+        engine.stop()
         assets_manager.requestJSON("../levels.json", (file: File) => {
           if (game.world.door) {
             game.world.setup(
               file.levels[game.world.level - 1].zones[
                 +game.world.door!.destination_zone
               ]
-            );
+            )
           } else {
             if (!file.levels[game.world.level - 1]) {
-              engine.stop();
-              return;
+              engine.stop()
+              return
             }
-            game.world.setupLevel(file.levels[game.world.level - 1]);
-            game.world.setup(file.levels[game.world.level - 1].zones[0]);
+            game.world.setupLevel(file.levels[game.world.level - 1])
+            game.world.setup(file.levels[game.world.level - 1].zones[0])
           }
 
-          engine.start();
-        });
+          engine.start()
+        })
       }
     }
 
-    game.update();
+    game.update()
     // } else {
     //   if (controller.f2.active) {
     //     game.world.video_playing = false;
@@ -301,28 +300,28 @@ window.addEventListener("load", function () {
     //     //engine.start();
     //}
     //}
-  };
+  }
 
-  let assets_manager = new AssetsManager();
-  let controller = new Controller();
+  let assets_manager = new AssetsManager()
+  let controller = new Controller()
   let display = new Display(
     document.querySelector("canvas")!,
     document.querySelector("video")!
-  );
-  let game = new Game(audioArray);
-  let engine = new Engine(1000 / 30, render, update);
+  )
+  let game = new Game(audioArray)
+  let engine = new Engine(1000 / 30, render, update)
 
-  display.buffer.canvas.height = game.world.height;
-  display.buffer.canvas.width = game.world.width;
-  display.buffer.imageSmoothingEnabled = true;
+  display.buffer.canvas.height = game.world.height
+  display.buffer.canvas.width = game.world.width
+  display.buffer.imageSmoothingEnabled = true
 
   let startGame = function (): void {
     // button = null;
-    button!.style.display = "none";
+    button!.style.display = "none"
     assets_manager.requestJSON("../levels.json", (file: File) => {
-      game.world.setupLevel(file.levels[0]);
-      game.world.setup(file.levels[0].zones[0]);
-      game.world.loadLevel(1);
+      game.world.setupLevel(file.levels[0])
+      game.world.setup(file.levels[0].zones[0])
+      game.world.loadLevel(1)
 
       assets_manager.loadTileSetImage(
         "images/mapka.png",
@@ -330,18 +329,18 @@ window.addEventListener("load", function () {
         "images/hero.png",
         "images/monsters.png",
         () => {
-          resize();
-          engine.start();
+          resize()
+          engine.start()
         }
-      );
-    });
-  };
+      )
+    })
+  }
 
-  let button = document.querySelector("button");
-  button?.addEventListener("click", startGame);
+  let button = document.querySelector("button")
+  button?.addEventListener("click", startGame)
   //startGame();
 
-  window.addEventListener("keydown", keyDownUp);
-  window.addEventListener("keyup", keyDownUp);
-  window.addEventListener("resize", resize);
-});
+  window.addEventListener("keydown", keyDownUp)
+  window.addEventListener("keyup", keyDownUp)
+  window.addEventListener("resize", resize)
+})

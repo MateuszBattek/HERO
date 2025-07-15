@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta name="viewport" content="user-scalable=no,width=device-width"/><link href="style.css" rel="stylesheet"/><title>HERO</title><script defer="defer" src="main.js"></script><link href="style.css" rel="stylesheet"></head><body><div id="controls"><p>controls</p><div id="menu-list"><p>Arrow_Right - ruch w prawo</p><p>Arrow_Left - ruch w lewo</p><p>Arrow_Up - latanie</p><p>Arrow_Down - stawianie bomby</p><p>Ctrl_Left - strzelanie</p></div></div><button>START GAME</button><canvas></canvas><script src="main.js"></script><script>let menu = document.getElementById("controls")
+      let menu_list = document.getElementById("menu-list")
+
+      menu.addEventListener("click", function (event) {
+        menu_list.style.display =
+          menu_list.style.display == "none" ? "grid" : "none"
+      })
+
+      menu_list.style.display = "none"</script></body></html>
